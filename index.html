@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="6936ca114a9991cd">
+<meta name="paintline-version" content="f37f5d7ae62e11ec">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -597,6 +597,36 @@
   .rush-top .sc { font: 800 .95rem var(--f-display); }
   .rush-panel { grid-column: 1 / -1; padding: 14px; border-radius: var(--r-panel); background: var(--surface); border: 1px solid var(--line); }
   .rush-panel h3 { margin: 0 0 8px; font: 800 .72rem var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+  /* Sıralama */
+  /* üç sekme dar ekrana sığsın: büyük harf ve harf aralığı yok */
+  .mode-switch.ach-tabs button { flex: 1 1 0; min-width: 0; text-transform: none; letter-spacing: 0; font-size: .86rem; padding-inline: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lb[hidden] { display: none; }
+  .lb { display: flex; flex-direction: column; gap: 12px; }
+  .lb .mode-switch button { min-height: 40px; font-size: .7rem; letter-spacing: .05em; }
+  .lb-card { padding: 14px; border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+  .lb-card h3 { margin: 0; font: 700 .66rem var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .lb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .lb-list li { display: grid; grid-template-columns: 26px 34px 1fr auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 12px; }
+  .lb-list li.me { background: color-mix(in oklab, var(--lv) 18%, transparent); }
+  .lb-list .rk { font: 800 .8rem var(--f-display); color: var(--muted); text-align: center; font-variant-numeric: tabular-nums; }
+  .lb-list li:nth-child(1) .rk { color: #EFA017; } .lb-list li:nth-child(2) .rk { color: #9AA3B8; } .lb-list li:nth-child(3) .rk { color: #C9824A; }
+  .lb-list .avatar { width: 34px; height: 34px; }
+  .lb-list .nm { min-width: 0; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-list .nm small { display: block; font-size: .72rem; font-weight: 600; color: var(--muted); }
+  .lb-list .sc { font: 800 .95rem var(--f-display); font-variant-numeric: tabular-nums; text-align: right; }
+  .lb-empty, .lb-note { margin: 0; color: var(--muted); font-size: .88rem; text-align: center; padding: 8px 0; }
+  .lb-me { font-weight: 700; text-align: center; font-size: .9rem; }
+  .lb-code { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .lb-code b { font: 800 1.35rem var(--f-display); letter-spacing: .18em; }
+  .lb-code .btn { min-height: 40px; }
+  .lb-add { display: flex; gap: 8px; }
+  .lb-add input { flex: 1; min-width: 0; min-height: 44px; padding: 0 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--solid); color: var(--ink); font: 800 1rem var(--f-display); letter-spacing: .15em; text-transform: uppercase; }
+  .lb-friends { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .lb-friends li { display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 12px; border-radius: 99px; background: color-mix(in oklab, var(--ink) 6%, transparent); font-weight: 700; font-size: .85rem; }
+  .lb-friends button { width: 32px; height: 32px; border-radius: 50%; border: 0; background: none; color: var(--muted); font-size: 1rem; cursor: pointer; }
+  .lb-msg { margin: 0; font-size: .82rem; font-weight: 600; color: var(--muted); min-height: 1.1em; }
+  .lb-msg.err { color: hsl(0 68% 48%); }
 
   /* Hesap */
   #auth, #cloudPick { z-index: 62; }
@@ -1211,9 +1241,10 @@
     </div>
   </div>
   <div class="inner">
-    <div class="mode-switch ach-tabs" id="achTabs" role="group" aria-label="Görünüm"><button data-t="ach" aria-pressed="true">Başarımlar</button><button data-t="stats" aria-pressed="false">İstatistikler</button></div>
+    <div class="mode-switch ach-tabs" id="achTabs" role="group" aria-label="Görünüm"><button data-t="ach" aria-pressed="true">Başarımlar</button><button data-t="stats" aria-pressed="false">İstatistikler</button><button data-t="lb" aria-pressed="false">Sıralama</button></div>
     <div class="ach-grid" id="achGrid"></div>
     <div class="stats" id="statsView" hidden></div>
+    <div class="lb" id="lbView" hidden></div>
   </div>
 </div>
 
@@ -2244,7 +2275,7 @@ function finishLevel(now) {
   L.won = true; L.winT = now; L.hintDir = null;
   spawnParts(L, now);
   const s = runStars();
-  if (L.daily) recordDaily(s); else if (L.event !== undefined) recordEvent(s); else recordBest(L.i, L.moves, L.hintUsed || L.powerUsed);
+  if (L.daily) { recordDaily(s); lbSubmitDaily(s); } else if (L.event !== undefined) recordEvent(s); else recordBest(L.i, L.moves, L.hintUsed || L.powerUsed);
   if (L.master) { L.masterNew = !save.master[L.i]; if (L.masterNew) save.master[L.i] = Date.now(); }
   save.stats.wins++; trackWin(L);
   L.questsDone = L.daily ? questEvent('daily') : questEvent('win', { stars: s, clean: !L.undoUsed && !L.hintUsed && !L.powerUsed,
@@ -2442,9 +2473,9 @@ let achTab = 'ach', achTotalText = '';
 function showAchTab(t) {
   achTab = t;
   document.querySelectorAll('#achTabs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t));
-  $('achGrid').hidden = t !== 'ach'; $('statsView').hidden = t !== 'stats';
-  $('achH').textContent = t === 'ach' ? 'Başarımlar' : 'İstatistikler';
-  if (t === 'stats') renderStats(); else $('achTotal').innerHTML = achTotalText;
+  $('achGrid').hidden = t !== 'ach'; $('statsView').hidden = t !== 'stats'; $('lbView').hidden = t !== 'lb';
+  $('achH').textContent = t === 'ach' ? 'Başarımlar' : t === 'stats' ? 'İstatistikler' : 'Sıralama';
+  if (t === 'stats') renderStats(); else if (t === 'lb') renderLb(); else $('achTotal').innerHTML = achTotalText;
 }
 document.querySelectorAll('#achTabs button').forEach(b => b.onclick = () => { if (achTab !== b.dataset.t) { SFX.toggle(); showAchTab(b.dataset.t); } });
 function renderStats() {
@@ -2574,7 +2605,7 @@ const FRAMES = [
 ];
 let avN = 0;
 function avatarSvg(p = save.profile) {
-  const A = AVATARS.find(a => a.id === p.avatar) || AVATARS[0], F = FRAMES.find(f => f.id === p.frame && f.ok()) || FRAMES[0], n = ++avN;
+  const A = AVATARS.find(a => a.id === p.avatar) || AVATARS[0], F = FRAMES.find(f => f.id === p.frame && (p.any || f.ok())) || FRAMES[0], n = ++avN;
   const ring = F.colors.length ? `<circle cx="50" cy="50" r="48" fill="url(#fr${n})"/><circle cx="50" cy="50" r="40.5" fill="rgba(0,0,0,.25)"/>` : '';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><defs>`
     + `<linearGradient id="fr${n}" x1="0" y1="0" x2="1" y2="1">${F.colors.map((c, k, a) => `<stop offset="${k / Math.max(1, a.length - 1)}" stop-color="${c}"/>`).join('')}</linearGradient>`
@@ -2615,7 +2646,7 @@ function renderProfile() {
     P.frame = F.id; SFX.toggle(); $('profHint').textContent = `${F.name} çerçeve kuşanıldı.`; saveProfile();
   });
 }
-function saveProfile() { persist(); renderProfile(); profChip(); }
+function saveProfile() { persist(); renderProfile(); profChip(); profileSyncSoon(); }
 function openProfile() {
   $('profName').value = save.profile.name; $('profHint').textContent = '';
   renderProfile();
@@ -2625,7 +2656,7 @@ function openProfile() {
 function closeProfile() {
   const name = $('profName').value.trim().replace(/\s+/g, ' ').slice(0, 12);
   save.profile.name = save.rush.name = name;
-  persist(); profChip();
+  persist(); profChip(); profileSyncSoon();
   $('profile').hidden = true;
 }
 $('profName').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('profName').blur(); } };
@@ -4493,6 +4524,10 @@ function endRush() {
   if (ranked) { r.top.push(entry); r.top.sort((a, b) => b.score - a.score || a.date - b.date); r.top = r.top.slice(0, 10); }
   rush.entry = ranked ? entry : null;
   persist();
+  { const run = rush; lbSubmit('rush:' + isoWeek(), rush.score, { boards: rush.n, perfect: rush.perfect }).then(rank => {
+      if (!rank) return; run.lbRank = rank;
+      if (!$('rushEnd').hidden && rush === run) $('rushText').textContent += ` Haftalık sıralamada ${rank}.`;
+    }); }
   if (checkAch().length) popAch(reduceMotion ? 400 : 1500);
   if (rush.n) SFX.win(); else SFX.fail();
   Music.duck(2.4); buzz([30, 60, 30]);
@@ -4508,6 +4543,7 @@ function endRush() {
       : record ? 'İlk rekorun bu. Hedef hamlede art arda bitirdiğin tahtalar puanı x5\'e kadar katlar.'
       : run.entry ? `Rekoruna ${r.bestScore - run.score} puan kaldı.` : `En iyi 10'a girmek için ${r.top[r.top.length - 1].score} puanı geç.`;
     if (qd.length) $('rushText').textContent += ` Görev tamam: ${qd.map(q => q.text).join(', ')}!`;
+    if (run.lbRank) $('rushText').textContent += ` Haftalık sıralamada ${run.lbRank}.`;
     $('rushName').hidden = !run.entry; $('bRushName').textContent = 'Kaydet';
     $('rushNameIn').value = r.name;
     $('rushTop').innerHTML = rushTable(5, run.entry);
@@ -4648,6 +4684,7 @@ const authError = (e, creating) => ({
   confirm: 'Hesap açıldı ama e-posta onayı açık. Supabase\'te "Confirm email"i kapat.',
 })[e.code] || (e.status === 400 && !creating ? 'E-posta ya da şifre yanlış.' : (creating ? 'Hesap açılamadı: ' : 'Giriş yapılamadı: ') + e.message);
 async function afterLogin() {
+  lbFriends = null; myProfile = null;
   save.welcomed = true;
   if (!save.profile.name && auth.user.name) save.profile.name = save.rush.name = auth.user.name.split(' ')[0].slice(0, 12);
   try { localStorage.setItem(STORE_KEY, JSON.stringify(save)); } catch (e) {}
@@ -4655,6 +4692,7 @@ async function afterLogin() {
   cloudReady = false;
   await reconcile(true);
   if (!$('cloudPick').hidden) { $('auth').hidden = true; return; }
+  profileSyncSoon(); flushScores();
   closeAuth(); toast(`Hoş geldin${save.profile.name ? ', ' + save.profile.name : ''}! İlerlemen hesabına kaydediliyor.`);
   profChip(); renderAccount();
 }
@@ -4725,14 +4763,14 @@ addEventListener('visibilitychange', () => {
   if (document.hidden) { if (auth.dirty && cloudReady) { clearTimeout(uploadTimer); push(true).catch(() => {}); } }
   else if (Date.now() - lastPull > 30000) reconcileSafe();
 });
-addEventListener('online', () => { if (auth && cloudOn()) reconcileSafe(); });
+addEventListener('online', () => { if (auth && cloudOn()) { reconcileSafe(); flushScores(); } });
 async function logout() {
   try { if (auth) await api('/auth/v1/logout', { method: 'POST' }); } catch (e) {}
-  saveAuth(null); cloudReady = false; renderAccount(); toast('Çıkış yapıldı. İlerlemen bu telefonda kaldı.');
+  saveAuth(null); cloudReady = false; lbFriends = null; myProfile = null; renderAccount(); toast('Çıkış yapıldı. İlerlemen bu telefonda kaldı.');
 }
 async function deleteAccount() {
   await api('/rest/v1/rpc/delete_my_account', { method: 'POST', body: '{}' });
-  saveAuth(null); cloudReady = false; renderAccount(); toast('Hesabın ve buluttaki kaydın silindi. Bu telefondaki ilerleme duruyor.');
+  saveAuth(null); cloudReady = false; lbFriends = null; myProfile = null; renderAccount(); toast('Hesabın ve buluttaki kaydın silindi. Bu telefondaki ilerleme duruyor.');
 }
 // ---- arayüz
 let authEmailAddr = '', authCreate = false;
@@ -4813,8 +4851,156 @@ async function cloudBoot() {
   renderAccount();
   if (!cloudOn()) return;
   try { if (await finishOAuth()) return; } catch (e) { openAuth('pick'); authMsg('Giriş tamamlanamadı: ' + e.message, true); return; }
-  if (auth) reconcileSafe();
+  if (auth) { reconcileSafe(); profileSyncSoon(); flushScores(); }
   else if (!save.welcomed) openAuth('welcome');
+}
+
+// ---------- Sıralama ----------
+// Supabase: profiles (ad, avatar, çerçeve, 6 harfli arkadaş kodu), scores ('daily:TARİH', 'rush:YIL-Whafta'),
+// friends (tek yönlü liste); supabase/002_siralama.sql. Skor yalnızca submit_score() ile yazılır (sınır denetimi,
+// yalnız daha iyisi kalır). Günün bulmacası skoru = yıldız*1000 − hamle. Sıralama herkese açık okunur; girişsiz de görünür.
+// Gönderilemeyen skorlar SCOREQ_KEY'de bekler, girişte ve internet gelince yeniden gönderilir.
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', SCOREQ_KEY = 'paintline.scoreq';
+const isoWeek = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), day = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y = t.getUTCFullYear(), w = Math.ceil(((t - Date.UTC(y, 0, 1)) / 864e5 + 1) / 7);
+  return `${y}-W${String(w).padStart(2, '0')}`;
+};
+var myProfile = null, profileTimer = 0;
+const randCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+async function ensureProfile() {
+  if (!auth || !cloudOn()) return null;
+  const P = save.profile, body = { user_id: auth.user.id, name: (P.name || 'Oyuncu').trim().slice(0, 12) || 'Oyuncu', avatar: P.avatar || 'ball', frame: FRAMES.find(f => f.id === P.frame)?.ok() ? P.frame : 'plain' };
+  const sig = JSON.stringify(body);
+  if (myProfile && myProfile.uid === auth.user.id && myProfile.sig === sig) return myProfile;
+  if (!myProfile || myProfile.uid !== auth.user.id) {
+    const rows = await api(`/rest/v1/profiles?select=code&user_id=eq.${auth.user.id}`);
+    myProfile = { uid: auth.user.id, code: rows[0]?.code || null, sig: null };
+  }
+  for (let i = 0; i < 5; i++) {
+    const code = myProfile.code || randCode();
+    try {
+      await api('/rest/v1/profiles?on_conflict=user_id', { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
+        body: JSON.stringify({ ...body, code, updated_at: new Date().toISOString() }) });
+      myProfile = { uid: auth.user.id, code, sig };
+      return myProfile;
+    } catch (e) { if (myProfile.code || e.code !== '23505') throw e; } // kod başka birinde: yenisini dene
+  }
+  return null;
+}
+function profileSyncSoon() { clearTimeout(profileTimer); profileTimer = setTimeout(() => ensureProfile().catch(() => {}), 1500); }
+function scoreQueue(q) { try { if (q) localStorage.setItem(SCOREQ_KEY, JSON.stringify(q)); return JSON.parse(localStorage.getItem(SCOREQ_KEY)) || {}; } catch (e) { return {}; } }
+async function rankOf(board, score) {
+  const res = await fetch(`${CLOUD.url}/rest/v1/scores?board=eq.${encodeURIComponent(board)}&score=gt.${score}&select=user_id`, {
+    headers: { apikey: CLOUD.key, Prefer: 'count=exact', Range: '0-0' } });
+  const m = /\/(\d+)$/.exec(res.headers.get('content-range') || '');
+  return m ? +m[1] + 1 : null;
+}
+// skor gönder; girişliyse sıralamadaki yeri döner (gönderilemezse sıraya alınır)
+async function lbSubmit(board, score, detail) {
+  if (!auth || !cloudOn()) return null;
+  try {
+    await ensureProfile();
+    const best = await api('/rest/v1/rpc/submit_score', { method: 'POST', body: JSON.stringify({ p_board: board, p_score: score, p_detail: detail }) });
+    const q = scoreQueue(); if (q[board] && q[board].score <= best) { delete q[board]; scoreQueue(q); }
+    return await rankOf(board, best);
+  } catch (e) {
+    const q = scoreQueue(); if (!q[board] || q[board].score < score) { q[board] = { score, detail }; scoreQueue(q); }
+    return null;
+  }
+}
+async function flushScores() {
+  if (!auth || !cloudOn()) return;
+  const q = scoreQueue();
+  for (const [board, v] of Object.entries(q)) await lbSubmit(board, v.score, v.detail);
+}
+function lbSubmitDaily(stars) {
+  const L0 = L;
+  lbSubmit('daily:' + L0.daily, stars * 1000 - L0.moves, { moves: L0.moves, stars }).then(rank => {
+    if (!rank) return;
+    const add = () => { if (!$('win').hidden && L === L0) $('winText').textContent += ` Bugünkü sıralamada ${rank}.`; };
+    $('win').hidden ? setTimeout(add, 900) : add();
+  });
+}
+// ---- ekran
+let lbBoard = 'daily', lbScope = 'all', lbFriends = null;
+const lbKey = () => lbBoard === 'daily' ? 'daily:' + dayKey() : 'rush:' + isoWeek();
+async function loadFriends() {
+  const rows = await api(`/rest/v1/friends?select=friend_id,profiles!friends_friend_id_fkey(name,code)&user_id=eq.${auth.user.id}&order=created_at`);
+  lbFriends = rows.map(r => ({ id: r.friend_id, name: r.profiles?.name || 'Oyuncu', code: r.profiles?.code || '' }));
+  return lbFriends;
+}
+async function renderLb() {
+  const box = $('lbView');
+  $('achTotal').innerHTML = lbBoard === 'daily' ? `Günün bulmacası · ${shortDate(dayKey())}` : 'Zamana karşı · bu hafta';
+  if (!cloudOn()) { box.innerHTML = '<p class="lb-note">Sıralama telefon uygulamasında açılır.</p>'; return; }
+  const seg = (name, val, items) => `<div class="mode-switch" role="group" aria-label="${name}">${items.map(([v, t]) => `<button data-${name}="${v}" aria-pressed="${v === val}">${t}</button>`).join('')}</div>`;
+  box.innerHTML = seg('board', lbBoard, [['daily', 'Günün bulmacası'], ['rush', 'Zamana karşı']])
+    + (auth ? seg('scope', lbScope, [['all', 'Herkes'], ['friends', 'Arkadaşlarım']]) : '')
+    + '<div class="lb-card"><ol class="lb-list" id="lbList"><li class="lb-empty">Yükleniyor…</li></ol><div class="lb-me" id="lbMe"></div></div>'
+    + (auth ? `<div class="lb-card"><h3>Arkadaşlar</h3>
+        <div class="lb-code"><span>Arkadaş kodun</span><b id="lbCode">······</b><button class="btn" id="bLbCopy">Kopyala</button>${navigator.share ? '<button class="btn" id="bLbShare">Paylaş</button>' : ''}</div>
+        <form class="lb-add" id="lbAdd"><label class="sr-only" for="lbAddIn">Arkadaş kodu</label><input id="lbAddIn" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="KOD"><button class="btn primary" type="submit">Ekle</button></form>
+        <p class="lb-msg" id="lbMsg" role="status" aria-live="polite"></p>
+        <ul class="lb-friends" id="lbFriends"></ul></div>`
+      : '<div class="lb-card"><p class="lb-note">Sıralamada görünmek ve arkadaş eklemek için giriş yap.</p><button class="btn primary" id="bLbIn">Giriş yap · hesap oluştur</button></div>');
+  box.querySelectorAll('[data-board]').forEach(b => b.onclick = () => { if (lbBoard !== b.dataset.board) { lbBoard = b.dataset.board; SFX.toggle(); renderLb(); } });
+  box.querySelectorAll('[data-scope]').forEach(b => b.onclick = () => { if (lbScope !== b.dataset.scope) { lbScope = b.dataset.scope; SFX.toggle(); renderLb(); } });
+  if (!auth) { $('bLbIn').onclick = () => { SFX.ui(); $('ach').hidden = true; openAuth('settings'); }; }
+  else wireFriends();
+  try {
+    let ids = null;
+    if (auth && lbScope === 'friends') { const fr = lbFriends || await loadFriends(); ids = [auth.user.id, ...fr.map(f => f.id)]; }
+    const board = lbKey(), filter = ids ? `&user_id=in.(${ids.join(',')})` : '';
+    const rows = await api(`/rest/v1/scores?board=eq.${encodeURIComponent(board)}${filter}&select=user_id,score,detail,profiles(name,avatar,frame)&order=score.desc,updated_at.asc&limit=50`, {}, !!auth);
+    if (lbKey() !== board || $('lbView').hidden) return;
+    const meId = auth?.user.id, meAt = rows.findIndex(r => r.user_id === meId);
+    $('lbList').innerHTML = rows.length ? rows.map((r, i) => {
+      const P = r.profiles || {}, d = r.detail || {};
+      const sub = lbBoard === 'daily' ? `${d.moves ?? '?'} hamle` : `${d.boards ?? '?'} tahta · ${d.perfect ?? 0} kusursuz`;
+      const val = lbBoard === 'daily' ? '★'.repeat(d.stars || Math.floor(r.score / 1000)) : fmtNum(r.score);
+      return `<li${r.user_id === meId ? ' class="me"' : ''}><span class="rk">${i + 1}</span>${avatarHtml({ avatar: P.avatar, frame: P.frame, any: true })}<span class="nm">${escHtml(P.name || 'Oyuncu')}<small>${sub}</small></span><span class="sc">${val}</span></li>`;
+    }).join('') : `<li class="lb-empty">${lbBoard === 'daily' ? 'Bugün henüz kimse çözmedi. İlk sen ol!' : 'Bu hafta henüz tur yok. İlk sen ol!'}</li>`;
+    let me = '';
+    if (auth && meAt < 0 && lbScope === 'all') {
+      const mine = await api(`/rest/v1/scores?board=eq.${encodeURIComponent(board)}&user_id=eq.${meId}&select=score`);
+      if (mine[0]) me = `Senin sıran: ${await rankOf(board, mine[0].score)}.`;
+    }
+    if (auth && meAt < 0 && !me) me = lbBoard === 'daily' ? 'Günün bulmacasını çöz, sıralamaya gir.' : 'Bir zamana karşı turu oyna, sıralamaya gir.';
+    $('lbMe').textContent = me;
+  } catch (e) {
+    $('lbList').innerHTML = `<li class="lb-empty">${navigator.onLine ? 'Sıralama yüklenemedi. Biraz sonra yeniden dene.' : 'İnternet yok; bağlanınca sıralama görünür.'}</li>`;
+  }
+}
+function lbFriendsHtml() {
+  if (!lbFriends) return '';
+  return lbFriends.length ? lbFriends.map(f => `<li>${escHtml(f.name)}<button data-del="${f.id}" aria-label="${escHtml(f.name)} listenden çıkar">✕</button></li>`).join('') : '';
+}
+async function wireFriends() {
+  const msg = (t, err) => { const m = $('lbMsg'); if (m) { m.textContent = t; m.classList.toggle('err', !!err); } };
+  try { const P = await ensureProfile(); if ($('lbCode')) $('lbCode').textContent = P?.code || '——'; } catch (e) { msg('Profil hazırlanamadı. İnternetini kontrol et.', true); }
+  const code = () => $('lbCode')?.textContent || '';
+  $('bLbCopy').onclick = async () => { try { await navigator.clipboard.writeText(code()); msg('Kod kopyalandı.'); } catch (e) { msg('Kopyalanamadı; kodu elle yaz: ' + code()); } };
+  if ($('bLbShare')) $('bLbShare').onclick = () => navigator.share({ text: `Paintline'da beni arkadaş olarak ekle: ${code()}`, url: 'https://edonardo-creator.github.io/paintline/' }).catch(() => {});
+  const paint = () => { const ul = $('lbFriends'); if (!ul) return; ul.innerHTML = lbFriendsHtml(); ul.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+    try { await api(`/rest/v1/friends?user_id=eq.${auth.user.id}&friend_id=eq.${b.dataset.del}`, { method: 'DELETE' }); lbFriends = lbFriends.filter(f => f.id !== b.dataset.del); paint(); msg('Listeden çıkarıldı.'); if (lbScope === 'friends') renderLb(); }
+    catch (e) { msg('Çıkarılamadı.', true); } }); };
+  $('lbAdd').onsubmit = async e => {
+    e.preventDefault();
+    const c = $('lbAddIn').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!/^[A-Z2-9]{6}$/.test(c)) { msg('Kod 6 harf ve rakamdan oluşur.', true); return; }
+    if (c === code()) { msg('Bu senin kodun.', true); return; }
+    try {
+      const rows = await api(`/rest/v1/profiles?select=user_id,name&code=eq.${c}`);
+      if (!rows[0]) { msg('Bu kodla bir oyuncu bulunamadı.', true); return; }
+      try { await api('/rest/v1/friends', { method: 'POST', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ user_id: auth.user.id, friend_id: rows[0].user_id }) }); }
+      catch (err) { if (err.code !== '23505') throw err; msg(`${rows[0].name} zaten listende.`); return; }
+      await loadFriends(); paint(); $('lbAddIn').value = ''; msg(`${rows[0].name} eklendi.`); SFX.ach();
+      if (lbScope === 'friends') renderLb();
+    } catch (err) { msg('Eklenemedi: ' + err.message, true); }
+  };
+  try { if (!lbFriends) await loadFriends(); paint(); } catch (e) {}
 }
 
 // ---------- Başlat ----------
