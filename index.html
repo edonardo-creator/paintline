@@ -1,9 +1,9 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="35fb933e36716deb">
+<meta name="paintline-version" content="0cb9ab330bb891ac">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Paintline">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -633,16 +633,13 @@
   .acct .row .btn { flex: 1 1 auto; min-height: 44px; }
   .acct p { margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.45; }
 
-  /* iPhone ana ekran uygulaması: iOS bazen sayfa yüksekliğini durum çubuğu kadar kısa hesaplıyor ve altta boyanmamış
-     siyah bant kalıyor. Eksik yükseklik ölçülür (--vgap, fixViewport); sayfa ve tam ekran katmanlar o kadar uzar.
-     Hatasız cihazda --vgap 0'dır. */
   html { background: var(--bg); }
-  html { height: calc(100% + var(--vgap, 0px)); } /* gövde %100 kalır: fark yalnızca bir kez eklensin */
   /* oyun ekranındaki şeritler opak: iOS buzlu cam (backdrop-filter) kutularının içindeki yazıyı düşük çözünürlükte
      çizip bulanıklaştırabiliyor (üst çubuk aynı sebeple daha önce opak yapıldı) */
   .app > .hud, .app > .controls, .app .reward-bar .btn { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--solid); }
-  .title, .menu, .sheet { bottom: calc(-1 * var(--vgap, 0px)); }
-  body::before, .menu::before, .title::before { bottom: calc(-1 * var(--vgap, 0px)); }
+  /* pencereler ekrandan taşmaz: kart en fazla kalan alan kadar uzar, fazlası kartın içinde kayar */
+  .sheet { padding-top: max(12px, env(safe-area-inset-top, 0px)); }
+  .sheet > .card { max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
   /* açılış ekranı kalan gerçek alana sığdırılır (fitTitle): önce önizleme küçülür, yetmezse her şey sıkılaşır */
   .title.fit canvas { width: var(--demo); }
   .title.tight .title-stage { gap: 10px; }
@@ -4138,7 +4135,7 @@ function showTitle() {
   $('dailyInfo').textContent = dailyStatus();
   rushInfo(); chestDot(); profChip();
   $('title').hidden = false;
-  fixViewport(); fitTitle();
+  fitTitle();
   D = null;
   if (!demoRaf) demoRaf = requestAnimationFrame(demoFrame);
   $('bPlay').focus({ preventScroll: true });
@@ -4542,19 +4539,8 @@ $('bRushAgain').onclick = () => { SFX.start(); startRush(); };
 $('bRushHome').onclick = () => { SFX.ui(); $('rushEnd').hidden = true; showTitle(); };
 
 // ---------- Ekran düzeni (iPhone) ----------
-// fixViewport: ana ekran uygulamasında pencere yüksekliğinin ekrandan ne kadar kısa olduğunu ölçer (--vgap).
 // fitTitle: açılış ekranını, çentik ve alt çubuk payları düştükten sonra kalan alana sığdırır.
-function fixViewport() {
-  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
-  let gap = 0;
-  if (ios && standalone) {
-    const land = innerWidth > innerHeight, full = land ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height);
-    gap = Math.round(full - innerHeight);
-    if (gap < 2 || gap > 120) gap = 0;
-  }
-  document.documentElement.style.setProperty('--vgap', gap + 'px');
-}
+// (Ana ekran uygulamasındaki alt siyah bant için durum çubuğu 'black' yapıldı; bkz. <head>.)
 function fitTitle() {
   const t = $('title'); if (!t || t.hidden) return;
   const st = t.querySelector('.title-stage');
@@ -4570,9 +4556,8 @@ function fitTitle() {
   over = st.offsetHeight - avail;
   if (over > 0) t.style.setProperty('--demo', Math.max(80, Math.floor(demoCv.getBoundingClientRect().width - over)) + 'px');
 }
-fixViewport();
-addEventListener('resize', () => { fixViewport(); fitTitle(); });
-addEventListener('orientationchange', () => setTimeout(() => { fixViewport(); fitTitle(); }, 300));
+addEventListener('resize', () => fitTitle());
+addEventListener('orientationchange', () => setTimeout(fitTitle, 300));
 document.fonts?.ready?.then(() => fitTitle());
 
 // ---------- Hesap ve bulut kaydı ----------
