@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="6ff8dfb1c259e504">
+<meta name="paintline-version" content="27e434b2e3542a16">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -638,6 +638,9 @@
      Hatasız cihazda --vgap 0'dır. */
   html { background: var(--bg); }
   html { height: calc(100% + var(--vgap, 0px)); } /* gövde %100 kalır: fark yalnızca bir kez eklensin */
+  /* oyun ekranındaki şeritler opak: iOS buzlu cam (backdrop-filter) kutularının içindeki yazıyı düşük çözünürlükte
+     çizip bulanıklaştırabiliyor (üst çubuk aynı sebeple daha önce opak yapıldı) */
+  .app > .hud, .app > .controls, .app .reward-bar .btn { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--solid); }
   .title, .menu, .sheet { bottom: calc(-1 * var(--vgap, 0px)); }
   body::before, .menu::before, .title::before { bottom: calc(-1 * var(--vgap, 0px)); }
   /* açılış ekranı kalan gerçek alana sığdırılır (fitTitle): önce önizleme küçülür, yetmezse her şey sıkılaşır */
