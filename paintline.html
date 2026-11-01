@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="27e434b2e3542a16">
+<meta name="paintline-version" content="35fb933e36716deb">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1738,7 +1738,26 @@ function ac() {
   return audio;
 }
 // iOS ve Chrome sesi ancak bir dokunuş/tuş sırasında açar; uygulama arka plandan dönünce de yeniden açmak gerekir.
-const unlockAudio = () => { if (save.sound && (!audio || audio.state !== 'running')) ac(); };
+// iPhone sessiz modu: Web Audio sessiz düğmesiyle tamamen susar. Oyunda ses açıksa iOS'a 'oynatma' oturumu bildirilir:
+// yeni iOS'ta navigator.audioSession, eskilerde arka planda döngüde çalan sessiz bir <audio> aynı etkiyi verir.
+// Oyunda ses kapatılınca (cycleSound / kaydırıcılar) oturum geri bırakılır (audioPlayback(false)).
+const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let silentEl = null;
+function silentWav() {
+  const n = 4000, b = new Uint8Array(44 + n), v = new DataView(b.buffer), w = (o, t) => { for (let i = 0; i < t.length; i++) b[o + i] = t.charCodeAt(i); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVE'); w(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true); b.fill(128, 44);
+  return URL.createObjectURL(new Blob([b], { type: 'audio/wav' }));
+}
+function audioPlayback(on) {
+  if (navigator.audioSession) { try { navigator.audioSession.type = on ? 'playback' : 'auto'; } catch (e) {} return; }
+  if (!isIOS) return;
+  if (on) {
+    if (!silentEl) { silentEl = new Audio(silentWav()); silentEl.loop = true; silentEl.setAttribute('playsinline', ''); silentEl.preload = 'auto'; }
+    if (silentEl.paused) silentEl.play().catch(() => {});
+  } else if (silentEl && !silentEl.paused) silentEl.pause();
+}
+const unlockAudio = () => { if (save.sound) { audioPlayback(true); if (!audio || audio.state !== 'running') ac(); } };
 ['pointerup', 'touchend', 'keydown'].forEach(ev => addEventListener(ev, unlockAudio, { capture: true, passive: true }));
 
 function tone(freq, dur, type = 'sine', gain = 0.08, when = 0, toFreq = 0, wet = true) {
@@ -1805,7 +1824,7 @@ const SFX = {
   ach: () => { tone(SCALE[5], 0.5, 'sine', 0.05); tone(SCALE[7], 0.5, 'sine', 0.04, 0.09); tone(SCALE[9], 0.7, 'sine', 0.035, 0.18); tone(SCALE[9] * 2, 0.4, 'sine', 0.01, 0.18); },
 };
 function setSound(on, music = on) {
-  save.sound = on; save.music = music; persist(); soundIcon();
+  save.sound = on; save.music = music; persist(); soundIcon(); audioPlayback(on);
   if (bus) bus.master.gain.setTargetAtTime(on ? MASTER : 0, bus.ctx.currentTime, 0.015);
   SFX.toggle();
   Music.sync();
@@ -2963,7 +2982,7 @@ function setVol(kind, v) {
   save.vol[kind] = v;
   if (kind === 'music') save.music = v > 0;
   const on = save.vol.fx > 0 || save.music;
-  if (on !== save.sound) { save.sound = on; if (bus) bus.master.gain.setTargetAtTime(on ? MASTER : 0, bus.ctx.currentTime, 0.015); }
+  if (on !== save.sound) { save.sound = on; if (bus) bus.master.gain.setTargetAtTime(on ? MASTER : 0, bus.ctx.currentTime, 0.015); audioPlayback(on); }
   if (on) ac();
   soundIcon(); Music.sync(); Music.level();
 }
