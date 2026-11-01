@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#202443"/><stop offset="1" stop-color="#0A0C15"/></linearGradient>
+    <linearGradient id="paint" x2="1" y2="1"><stop stop-color="#FFA76C"/><stop offset=".5" stop-color="#FA7C97"/><stop offset="1" stop-color="#AA8DFF"/></linearGradient>
+    <radialGradient id="ball" cx=".3" cy=".25"><stop stop-color="white"/><stop offset="1" stop-color="#E6DBFF"/></radialGradient>
+  </defs>
+  <path fill="url(#bg)" d="M0 0h512v512H0z"/>
+  <rect x="110" y="110" width="292" height="292" rx="60" fill="#11152B" stroke="#3E4164" stroke-width="3"/>
+  <g fill="#2B3050">
+    <rect x="134" y="134" width="74" height="74" rx="17"/><rect x="219" y="134" width="74" height="74" rx="17"/><rect x="304" y="134" width="74" height="74" rx="17"/>
+    <rect x="134" y="219" width="74" height="74" rx="17"/><rect x="219" y="219" width="74" height="74" rx="17"/><rect x="304" y="219" width="74" height="74" rx="17"/>
+    <rect x="134" y="304" width="74" height="74" rx="17"/><rect x="219" y="304" width="74" height="74" rx="17"/><rect x="304" y="304" width="74" height="74" rx="17"/>
+  </g>
+  <path d="M171 341V171H341V341H256" fill="none" stroke="url(#paint)" stroke-width="58" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M171 326V171H326" fill="none" stroke="white" stroke-opacity=".2" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="256" cy="345" r="27" fill="#0A0C15" opacity=".35"/>
+  <circle cx="256" cy="337" r="27" fill="url(#ball)"/>
+  <ellipse cx="248" cy="328" rx="10" ry="6" fill="white"/>
+</svg>

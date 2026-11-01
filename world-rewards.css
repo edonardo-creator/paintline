@@ -1,0 +1,173 @@
+.reward-bar { display:flex; gap:8px; justify-content:space-between; flex-shrink:0; }
+.reward-bar .btn { min-height:40px; padding:8px 12px; font-size:.75rem; }
+
+/* Claude: "Dünya hazineleri" ekranı kart tabanlı yeniden tasarlandı.
+   Mobilde alttan açılan bir sayfa; büyük cüzdan, üç adımlık kazanma rehberi,
+   yatay kayan renk seti kartları, simgeli güç kartları ve katlanır kurallar. */
+.reward-shop {
+  position:fixed; inset:0; z-index:100; display:flex; align-items:flex-end; justify-content:center;
+  background:rgba(5,9,20,.55); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  overscroll-behavior:contain; animation:rwFade .25s ease;
+}
+.reward-shop[hidden] { display:none!important; }
+@keyframes rwFade { from { opacity:0; } }
+@keyframes rwRise { from { transform:translateY(40px); opacity:0; } }
+.reward-panel {
+  position:relative; width:100%; max-width:560px; max-height:92vh; overflow-y:auto; overflow-x:hidden; box-sizing:border-box; /* Claude: üstteki ışık yana taşıp paneli kaydırmasın */
+  background:var(--solid); color:var(--ink); border:1px solid var(--line); border-bottom:0;
+  border-radius:var(--r-card) var(--r-card) 0 0; padding:0 18px max(20px, env(safe-area-inset-bottom, 0px));
+  box-shadow:0 -20px 60px -20px rgba(0,0,0,.5); animation:rwRise .4s cubic-bezier(.2,.9,.3,1.1);
+}
+.reward-panel::before { /* üstte renkli ışık */
+  content:''; position:absolute; left:0; right:0; top:-120px; height:260px; pointer-events:none;
+  background:radial-gradient(closest-side, color-mix(in oklab, hsl(42 95% 55%) 28%, transparent), transparent);
+}
+.reward-panel > :not(.rw-head) { position:relative; }
+
+.rw-head {
+  position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:18px 0 10px; margin:0 -18px; padding-inline:18px; background:var(--solid);
+}
+.rw-head::after { /* kayan içerik başlığın altında yumuşakça kaybolsun */
+  content:''; position:absolute; left:0; right:0; top:100%; height:14px; pointer-events:none;
+  background:linear-gradient(var(--solid), transparent);
+}
+.rw-head small { display:block; font:800 .62rem var(--f-body); letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
+.rw-head h2 { margin:4px 0 0; font:800 1.35rem var(--f-display); letter-spacing:.01em; text-transform:uppercase; }
+.rw-close { width:44px; min-height:44px; padding:0; }
+.rw-close svg { width:20px; height:20px; stroke:currentColor; stroke-width:2.4; fill:none; stroke-linecap:round; }
+
+/* cüzdan */
+.rw-wallet {
+  display:grid; grid-template-columns:auto 1fr auto auto; align-items:center; gap:14px;
+  padding:14px 16px; border-radius:calc(var(--r-card) - 6px);
+  background:linear-gradient(135deg, color-mix(in oklab, hsl(42 95% 55%) 22%, var(--solid)), color-mix(in oklab, hsl(28 95% 55%) 10%, var(--solid)));
+  border:1px solid color-mix(in oklab, hsl(42 95% 50%) 40%, transparent);
+  box-shadow:inset 0 1px 0 var(--hi), 0 14px 30px -18px hsl(40 95% 45%);
+}
+.rw-gem {
+  width:48px; height:48px; border-radius:50%; display:grid; place-items:center; font-size:1.5rem; color:#fff;
+  background:radial-gradient(circle at 35% 30%, #FFE9A6, #F2A516 55%, #B86E00);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.5), 0 6px 16px -4px #E09A10; position:relative; overflow:hidden;
+}
+.rw-gem::after { /* geçen parıltı */
+  content:''; position:absolute; inset:-30%; background:linear-gradient(110deg, transparent 40%, rgba(255,255,255,.65) 50%, transparent 60%);
+  animation:rwShine 3.2s ease-in-out infinite;
+}
+@keyframes rwShine { 0% { transform:translateX(-70%); } 40%,100% { transform:translateX(70%); } }
+.rw-coins b { display:block; font:800 1.9rem/1 var(--f-display); font-variant-numeric:tabular-nums; }
+.rw-coins small, .rw-stat small { display:block; margin-top:4px; font:800 .58rem var(--f-body); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+.rw-stat { text-align:center; padding-left:12px; border-left:1px solid var(--line); }
+.rw-stat b { font:700 1.05rem var(--f-display); font-variant-numeric:tabular-nums; }
+
+/* kazanma rehberi */
+.rw-earn { list-style:none; margin:14px 0 4px; padding:0; display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+.rw-earn li {
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:3px; padding:10px 6px 9px;
+  border-radius:16px; background:color-mix(in oklab, var(--ink) 4%, transparent); border:1px solid var(--line);
+}
+.rw-earn-ico { font:800 .62rem var(--f-body); letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+.rw-earn .rw-stars { color:#F2A516; font-size:.9rem; letter-spacing:.05em; }
+.rw-earn b { font:800 1.2rem var(--f-display); color:hsl(38 95% 45%); }
+.rw-earn b::after { content:' ◈'; font-size:.75em; }
+.rw-earn .rw-zero b { color:var(--muted); }
+.rw-earn small { font-size:.66rem; line-height:1.25; color:var(--muted); font-weight:600; }
+
+.rw-sec {
+  display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin:20px 0 10px;
+  font:800 .82rem var(--f-display); letter-spacing:.08em; text-transform:uppercase;
+}
+.rw-sec small { font:700 .62rem var(--f-body); letter-spacing:.1em; color:var(--muted); }
+
+/* kartlar */
+.rw-card {
+  position:relative; box-sizing:border-box; border-radius:calc(var(--r-card) - 8px); padding:12px;
+  background:linear-gradient(180deg, color-mix(in oklab, var(--collection-color) 12%, var(--solid)), var(--solid) 70%);
+  border:1px solid color-mix(in oklab, var(--collection-color) 35%, var(--line));
+  box-shadow:inset 0 1px 0 var(--hi), 0 10px 24px -16px var(--collection-color);
+}
+.rw-card h4 { margin:2px 0 3px; font:800 .9rem var(--f-display); }
+.rw-card p { margin:0; font-size:.74rem; line-height:1.35; color:var(--muted); }
+.rw-world { font:800 .56rem var(--f-body); letter-spacing:.14em; text-transform:uppercase; color:color-mix(in oklab, var(--collection-color) 70%, var(--ink)); }
+
+/* renk setleri: yatay kayan şerit */
+.rw-row { display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:6px 6px 14px; margin:0 -6px; scroll-padding:6px; scrollbar-width:none; }
+.rw-row::-webkit-scrollbar { display:none; }
+.rw-skin { flex:0 0 156px; scroll-snap-align:start; display:flex; flex-direction:column; gap:2px; }
+.rw-skin.equipped { box-shadow:0 0 0 2px var(--collection-color), 0 14px 28px -14px var(--collection-color); }
+.rw-preview {
+  position:relative; isolation:isolate; overflow:hidden; aspect-ratio:1.25; margin-bottom:8px; border-radius:12px; padding:10px;
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; box-sizing:border-box;
+  background:color-mix(in oklab, var(--collection-color) 10%, var(--tray, #f5f5f8));
+}
+.rw-preview i { border-radius:5px; background:color-mix(in oklab, var(--ink) 10%, transparent); }
+.rw-preview i.on { background:linear-gradient(180deg, color-mix(in oklab, var(--collection-color), #fff 25%), var(--collection-color)); box-shadow:inset 0 -2px 0 rgba(0,0,0,.15); }
+.rw-preview i.ball { position:relative; }
+.rw-preview i.ball::after {
+  content:''; position:absolute; inset:18%; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #fff, color-mix(in oklab, var(--collection-color), #000 35%) 70%);
+  box-shadow:0 0 10px var(--collection-color);
+}
+.rw-locked { --collection-color:var(--muted); opacity:.75; border-style:dashed; }
+.rw-locked .rw-preview { display:grid; place-items:center; grid-template-columns:1fr; }
+.rw-locked .rw-preview span { font:800 2rem var(--f-display); color:var(--muted); }
+.rw-progress { margin-top:6px; font:700 .62rem var(--f-body); letter-spacing:.06em; color:var(--muted); }
+
+/* güçler: iki sütun */
+.rw-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
+.rw-power { display:flex; flex-direction:column; gap:6px; }
+.rw-ico {
+  width:40px; height:40px; border-radius:12px; display:grid; place-items:center; color:#fff;
+  background:linear-gradient(145deg, color-mix(in oklab, var(--collection-color), #fff 15%), color-mix(in oklab, var(--collection-color), #000 30%));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 8px 16px -8px var(--collection-color);
+}
+.rw-ico svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.rw-ptext { flex:1; }
+.rw-stock {
+  align-self:flex-start; padding:3px 9px; border-radius:999px; font:800 .6rem var(--f-body); letter-spacing:.1em; text-transform:uppercase;
+  background:color-mix(in oklab, var(--ink) 7%, transparent); color:var(--muted);
+}
+.rw-stock.has { background:color-mix(in oklab, var(--collection-color) 25%, transparent); color:var(--ink); }
+
+/* satın alma düğmeleri */
+.rw-buy {
+  margin-top:8px; width:100%; min-height:44px; padding:6px 10px; flex-direction:column; gap:0; border-radius:12px;
+  font:800 .74rem var(--f-display); letter-spacing:.06em; text-transform:uppercase; color:#fff; border:0;
+  background:linear-gradient(180deg, color-mix(in oklab, var(--collection-color), #000 18%), color-mix(in oklab, var(--collection-color), #000 42%));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 8px 16px -10px var(--collection-color);
+  text-shadow:0 1px 1px rgba(0,0,0,.25);
+}
+.rw-buy small { font:700 .56rem var(--f-body); letter-spacing:.06em; opacity:.85; text-transform:none; }
+.rw-buy:disabled { opacity:1; color:var(--muted); background:color-mix(in oklab, var(--ink) 6%, transparent); box-shadow:none; text-shadow:none; cursor:default; }
+.rw-buy.own { color:var(--ink); background:var(--solid); border:1px solid color-mix(in oklab, var(--collection-color) 50%, var(--line)); text-shadow:none; }
+.rw-buy.on { background:linear-gradient(180deg, color-mix(in oklab, var(--collection-color), #fff 5%), color-mix(in oklab, var(--collection-color), #000 25%)); }
+
+#rewardMessage { min-height:1.2em; margin:12px 0 0; text-align:center; font:700 .8rem var(--f-body); color:var(--ink); }
+#rewardMessage:empty { display:none; }
+
+.rw-rules { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
+.rw-rules summary { cursor:pointer; font:800 .72rem var(--f-display); letter-spacing:.1em; text-transform:uppercase; color:var(--muted); min-height:32px; display:flex; align-items:center; }
+.rw-rules ul { margin:6px 0 0; padding-left:18px; color:var(--muted); font-size:.76rem; line-height:1.5; }
+.rw-rules li + li { margin-top:4px; }
+
+[data-collection]:not([data-collection=""])::after { content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; opacity:.28; background-size:70px 70px; animation:collectionDrift 12s linear infinite; }
+.rw-preview[data-collection]::after { opacity:.55; z-index:1; }
+[data-collection="petals"]::after { background-image:radial-gradient(ellipse at 20% 30%,#ff759a 0 3px,transparent 5px),radial-gradient(circle at 75% 70%,transparent 7px,#ff759a 8px,transparent 10px); }
+[data-collection="waves"]::after { background-image:repeating-radial-gradient(ellipse at 0 50%,transparent 0 18px,#29d9ba 19px 20px,transparent 22px 34px); }
+[data-collection="stars"]::after { background-image:radial-gradient(circle at 20% 20%,#bd8cff 0 1px,transparent 3px),radial-gradient(circle at 65% 70%,#eee0ff 0 2px,transparent 4px); }
+[data-collection="crystals"]::after { background-image:repeating-linear-gradient(60deg,transparent 0 32px,#71e8ff 33px,transparent 35px),repeating-linear-gradient(-60deg,transparent 0 32px,#71e8ff 33px,transparent 35px); }
+[data-collection="sparks"]::after { background-image:repeating-linear-gradient(115deg,transparent 0 40px,#ffbf47 41px 43px,transparent 44px 60px); }
+/* 6. dünya (Kristal Mağara) koleksiyonu */
+[data-collection="prism"]::after { background-image:linear-gradient(60deg,transparent 0 40%,#ff9de255 45%,#9dd8ff55 50%,#c8ff9d55 55%,transparent 60%),radial-gradient(circle at 70% 30%,#f3dcff 0 2px,transparent 4px); }
+/* Claude: 7. dünya Saat Kulesi: pirinç dişli halkaları ve perçinler */
+[data-collection="gears"]::after { background-image:radial-gradient(circle at 30% 30%,transparent 0 9px,#e0a94a 10px 12px,transparent 13px),radial-gradient(circle at 30% 30%,#e0a94a 0 2.5px,transparent 3.5px),radial-gradient(circle at 76% 72%,transparent 0 5px,#f3d08a 6px 7px,transparent 8px); }
+/* Claude: 8. dünya seti: esinti çizgileri */
+[data-collection="breeze"]::after { background-image:radial-gradient(ellipse 22px 3px at 30% 30%,#7fd0f5 0 45%,transparent 60%),radial-gradient(ellipse 14px 2.5px at 70% 62%,#c9ecfb 0 45%,transparent 60%),radial-gradient(circle at 52% 82%,#fff 0 2px,transparent 3px); }
+@keyframes collectionDrift { to { background-position:70px -70px; } }
+@media(prefers-reduced-motion:reduce) { [data-collection]::after, .rw-gem::after, .reward-panel, .reward-shop { animation:none!important; } }
+@media(max-width:420px) { .reward-bar .btn { font-size:.68rem; padding:7px 9px; } .rw-wallet { gap:10px; padding:12px; } .rw-coins b { font-size:1.6rem; } }
+@media(max-width:360px) { .rw-stat:last-child { display:none; } .rw-wallet { grid-template-columns:auto 1fr auto; } }
+@media(max-height:700px) { .reward-bar .btn { min-height:32px; padding-block:5px; } .app { gap:7px; } }
+
+/* Accessible touch targets, including compact screens. */
+.reward-bar .btn { min-height:44px; min-width:44px; }
