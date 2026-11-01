@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="0cb9ab330bb891ac">
+<meta name="paintline-version" content="aa22e5f38261c2e2">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -4569,7 +4569,7 @@ document.fonts?.ready?.then(() => fitTitle());
 // Eşitleme: persist() → cloudDirty() → en geç 60 sn'de bir yükler; açılışta, uygulamaya dönünce ve girişte hesaptakini çeker.
 // Bu cihazda eşitlenmemiş değişiklik yokken hesap daha yeniyse hesaptaki alınır; ikisinde de ilerleme varsa oyuncuya sorulur.
 // Hesap yalnızca telefon adresinde (en üst pencere, http/https) açılır; claude.ai önizlemesinde (iframe) kapalıdır.
-const CLOUD = { url: '', key: '', apple: false };
+const CLOUD = { url: 'https://rjtmewdtselmtnfoldmd.supabase.co', key: 'sb_publishable_PnaOMnjjgERlUQBATe5nCA_mQoM5xIp', apple: false }; // publishable anahtar herkese açık olmak üzere tasarlandı; secret/service_role ASLA buraya yazılmaz
 const AUTH_KEY = 'paintline.auth', PKCE_KEY = 'paintline.pkce';
 const cloudOn = () => !!(CLOUD.url && CLOUD.key) && /^https?:$/.test(location.protocol) && window.top === window.self;
 // persist() kayıt yüklenirken de çağrılır; o an bu bölüm henüz çalışmamış olabilir, bu yüzden var
