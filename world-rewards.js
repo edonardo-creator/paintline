@@ -73,7 +73,7 @@
     return earned;
   }
   function canUse() {
-    if (!L || L.daily || L.rush || L.master || L.anim || L.won || L.powerUsed) return false;
+    if (!L || L.daily || L.rush || L.master || L.tour !== undefined || L.anim || L.won || L.powerUsed) return false;
     const w = L.world;
     if (w === 0) return neighbors().some(k => !L.painted[k]);
     if (w === 1) return L.moves >= 3;
@@ -100,7 +100,7 @@
     $('rewardCoins').textContent = r.coins;
     $('rewardUse').textContent = `${itemOf(w).power} · ${r.stock[w] || 0}`;
     $('rewardUse').disabled = !(r.stock[w] > 0) || !canUse();
-    $('rewardUse').hidden = !!L?.daily || !!L?.rush || !!L?.master || !(r.stock[w] > 0);
+    $('rewardUse').hidden = !!L?.daily || !!L?.rush || !!L?.master || L?.tour !== undefined || !(r.stock[w] > 0);
     $('rewardUse').title = itemOf(w).description;
   }
   function applyCollection() {
@@ -232,6 +232,8 @@
   const originalDaily = startDaily;
   startDaily = function(...args) { originalDaily(...args); applyCollection(); sync(); };
   // Claude: zamana karşı tahtaları da dünyanın kuşanılmış setiyle çizilir
+  const originalTour = startTour; // Claude: turnuva bölümleri de kuşanılmış setle
+  startTour = function(...args) { originalTour(...args); applyCollection(); sync(); };
   const originalEvent = startEvent;
   startEvent = function(...args) { originalEvent(...args); applyCollection(); sync(); };
   const originalRush = startRushBoard;
@@ -273,7 +275,7 @@
     originalWin(s);
     if (L.daily && L.rewardEarned) { $('winText').textContent += ` ${save.daily.streak} günlük seri: +${L.rewardEarned} jeton!`; return; }
     if (L.master && !L.rewardEarned) return; // Claude: usta kartında jeton yoksa jeton cümlesi de yok
-    if (L.daily || L.hintUsed || L.event !== undefined) return; // Claude: bu denemelerde jeton yok, kartın kendi metni yeterli
+    if (L.daily || L.hintUsed || L.event !== undefined || L.tour !== undefined) return; // Claude: bu denemelerde jeton yok, kartın kendi metni yeterli
     $('winText').textContent += L.powerUsed ? ' Güç kullanıldı: jeton verilmez.' : L.rewardEarned ? ` +${L.rewardEarned} özel jeton kazandın!` : s === 3 ? ' Bu bölümün jetonu daha önce alındı.' : ' İlk güçsüz 3 yıldızlı çözümün 1 jeton kazandırır.';
   };
   $('rewardOpen').onclick = openShop; titleButton.onclick = openShop;

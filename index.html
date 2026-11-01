@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="f37f5d7ae62e11ec">
+<meta name="paintline-version" content="ff096ada96e0204a">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -598,12 +598,25 @@
   .rush-panel { grid-column: 1 / -1; padding: 14px; border-radius: var(--r-panel); background: var(--surface); border: 1px solid var(--line); }
   .rush-panel h3 { margin: 0 0 8px; font: 800 .72rem var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 
+  /* Haftalık turnuva */
+  .tour-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .tour-row button { aspect-ratio: 1; min-height: 44px; border-radius: 14px; border: 1px solid var(--line); background: var(--solid); color: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; padding: 0; font: inherit; }
+  .tour-row button b { font: 800 1rem var(--f-display); }
+  .tour-row button small { font-size: .66rem; color: var(--muted); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tour-row button.done { background: color-mix(in oklab, var(--lv) 22%, var(--solid)); border-color: color-mix(in oklab, var(--lv) 50%, var(--line)); }
+  .tour-row button:disabled { opacity: .5; cursor: default; }
+  .tour-sum { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-weight: 700; font-size: .9rem; }
+  .tour-sum .btn { min-height: 40px; }
+  .tour-card .q-head b { display: flex; align-items: center; gap: 8px; }
+  .tour-card .q-head svg { width: 20px; height: 20px; fill: none; stroke: hsl(42 92% 50%); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tour-note { margin: 0; font-size: .78rem; color: var(--muted); line-height: 1.45; }
+
   /* Sıralama */
   /* üç sekme dar ekrana sığsın: büyük harf ve harf aralığı yok */
   .mode-switch.ach-tabs button { flex: 1 1 0; min-width: 0; text-transform: none; letter-spacing: 0; font-size: .86rem; padding-inline: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .lb[hidden] { display: none; }
   .lb { display: flex; flex-direction: column; gap: 12px; }
-  .lb .mode-switch button { min-height: 40px; font-size: .7rem; letter-spacing: .05em; }
+  .lb .mode-switch button { min-height: 40px; font-size: .8rem; letter-spacing: 0; text-transform: none; flex: 1 1 0; min-width: 0; padding-inline: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .lb-card { padding: 14px; border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
   .lb-card h3 { margin: 0; font: 700 .66rem var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
   .lb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -1513,6 +1526,7 @@ if (save.haptics === undefined) save.haptics = true;
 if (!save.theme) save.theme = 'auto';
 // erişilebilirlik: desenli karolar, yazı boyu (0–2), yön düğmeleri (off/right/left), hareket (auto/reduce)
 save.a11y = Object.assign({ pattern: false, text: 0, dpad: 'off', motion: 'auto' }, save.a11y);
+if (!save.tour) save.tour = {}; // haftalık turnuva: 'YYYY-Www' → { defs, best{k}, done, total, submitted, rewarded, rank }
 if (!save.events) save.events = {}; // sezon etkinlikleri: kimlik → { best{k}, stars{k}, rewarded }
 if (!save.master) save.master = {}; // usta zorlukta geçilen bölümler: sıra → zaman
 if (!save.chests) save.chests = {}; // harita sandıkları: 'dünya-sıra' → açılış zamanı
@@ -1526,7 +1540,7 @@ function applyThemePref() {
   if (save.theme === 'auto') delete r.dataset.theme; else r.dataset.theme = save.theme;
 }
 applyThemePref();
-save.stats = Object.assign({ wins: 0, flawless: 0, dailies: 0, bestStreak: save.daily?.streak || 0, shares: 0, quests: 0 }, save.stats);
+save.stats = Object.assign({ wins: 0, flawless: 0, dailies: 0, bestStreak: save.daily?.streak || 0, shares: 0, quests: 0, tourDone: 0, tourPodium: 0, tourWins: 0 }, save.stats);
 // istatistikler (2026-10-31): eski kayıtta hamle ve karo rekorlardan en az değer olarak başlar, süre ve günlük geçmiş 0'dan
 if (save.stats.moves === undefined) {
   let m = 0, t = 0; const ww = {};
@@ -2204,7 +2218,7 @@ function enterScene(hint, showHint) {
   // zamana karşıda hamle sınırı ve geri alma sınırı yok, ipucu kapalı
   // usta zorlukta sınır tam en kısa çözüm, geri alma ve ipucu yok
   L.limit = L.rush ? Infinity : L.master ? L.par : moveLimit(L.par); L.undoLeft = L.rush ? Infinity : L.master ? 0 : undoLimit(L.par);
-  $('bHint').hidden = !!(L.rush || L.master); $('lvl').classList.toggle('rush-on', !!L.rush);
+  $('bHint').hidden = !!(L.rush || L.master || L.tour !== undefined); $('lvl').classList.toggle('rush-on', !!L.rush);
   if (!L.rush) $('lvl').classList.remove('rush-warn');
   $('win').hidden = true; $('fail').hidden = true;
   applyTheme(L.world);
@@ -2217,7 +2231,7 @@ function enterScene(hint, showHint) {
   updateHud(); resize(); kick();
   srSay(`${$('lvl').getAttribute('aria-label')}. ${L.floorCount} karo, hedef ${L.par} hamle${isFinite(L.limit) ? `, en fazla ${L.limit}` : ''}. ${save.a11y.dpad !== 'off' ? 'Yön düğmeleriyle' : 'Ok tuşlarıyla ya da kaydırarak'} oyna.`);
 }
-const restart = () => L.rush ? (rush && !rush.over && !L.won && startRushBoard(L.rushDef)) : L.event !== undefined ? startEvent(L.event) : L.daily ? startDaily() : startLevel(L.i, true);
+const restart = () => L.rush ? (rush && !rush.over && !L.won && startRushBoard(L.rushDef)) : L.tour !== undefined ? startTour(L.tour, L.tourWeek) : L.event !== undefined ? startEvent(L.event) : L.daily ? startDaily() : startLevel(L.i, true);
 // Her denemede hamle sınırı (en kısa çözüm + yarısı kadar pay, en az 3) ve en kısa çözümle orantılı
 // geri alma hakkı var (dörtte biri, en az 1).
 // Sınıra gelip tahta bitmemişse deneme kaybedilir; baştan başlamak iki hakkı da yeniler.
@@ -2275,7 +2289,7 @@ function finishLevel(now) {
   L.won = true; L.winT = now; L.hintDir = null;
   spawnParts(L, now);
   const s = runStars();
-  if (L.daily) { recordDaily(s); lbSubmitDaily(s); } else if (L.event !== undefined) recordEvent(s); else recordBest(L.i, L.moves, L.hintUsed || L.powerUsed);
+  if (L.daily) { recordDaily(s); lbSubmitDaily(s); } else if (L.tour !== undefined) recordTour(); else if (L.event !== undefined) recordEvent(s); else recordBest(L.i, L.moves, L.hintUsed || L.powerUsed);
   if (L.master) { L.masterNew = !save.master[L.i]; if (L.masterNew) save.master[L.i] = Date.now(); }
   save.stats.wins++; trackWin(L);
   L.questsDone = L.daily ? questEvent('daily') : questEvent('win', { stars: s, clean: !L.undoUsed && !L.hintUsed && !L.powerUsed,
@@ -2374,6 +2388,9 @@ const ACHS = [
   { id: 'masterW', icon: 'crown', tier: 'gold', name: 'Altın Usta', desc: 'Bir dünyanın bütün bölümlerini usta zorlukta geç.', val: st => st.masterWorlds, goal: 1 },
   { id: 'quest10', icon: 'compass', tier: 'silver', name: 'Görev Avcısı', desc: '10 günlük görev tamamla.', val: st => st.quests, goal: 10 },
   { id: 'event1', icon: 'star', tier: 'gold', name: 'Şenlik Ruhu', desc: 'Bir sezon etkinliğinin bütün bölümlerini bitir.', val: st => st.events, goal: 1 },
+  { id: 'tour5', icon: 'trophy', tier: 'bronze', name: 'Turnuva Gediklisi', desc: '5 haftalık turnuvayı tamamla.', val: st => st.tourDone, goal: 5 },
+  { id: 'tourPod', icon: 'trophy', tier: 'silver', name: 'Kürsüde', desc: 'Bir haftalık turnuvada ilk üçe gir.', val: st => st.tourPodium, goal: 1 },
+  { id: 'tourWin', icon: 'crown', tier: 'gold', name: 'Turnuva Şampiyonu', desc: 'Bir haftalık turnuvayı birinci bitir.', val: st => st.tourWins, goal: 1 },
   { id: 'share1', icon: 'share', tier: 'bronze', name: 'Gösteriş', desc: 'Bir sonucunu paylaş ya da kaydet.', val: st => st.shares, goal: 1 },
   ...WORLDS.map((W, w) => ({
     id: 'world' + w, icon: 'flag', world: w, name: `${W.name} Fatihi`, desc: `${W.name} dünyasının bütün bölümlerini bitir.`,
@@ -2690,7 +2707,7 @@ async function makeShareCard(S, moves, stars) {
   lg.addColorStop(0, `hsl(${hh} ${hs}% 42%)`); lg.addColorStop(1, `hsl(${hh} ${hs}% 58%)`);
   c.fillStyle = lg; c.fillText('LINE', x0 + wA, 170);
   c.font = `700 30px ${BODY}`; c.fillStyle = muted; c.textAlign = 'center';
-  const sub = S.event !== undefined ? `${S.eventName.toLocaleUpperCase('tr')} · ${S.event + 1}` : S.daily ? `GÜNÜN BULMACASI · ${shortDate(S.daily).toLocaleUpperCase('tr')}` : `${WORLDS[S.world].name.toLocaleUpperCase('tr')} · BÖLÜM ${S.i + 1}`;
+  const sub = S.tour !== undefined ? `HAFTALIK TURNUVA · ${S.tour + 1}/5` : S.event !== undefined ? `${S.eventName.toLocaleUpperCase('tr')} · ${S.event + 1}` : S.daily ? `GÜNÜN BULMACASI · ${shortDate(S.daily).toLocaleUpperCase('tr')}` : `${WORLDS[S.world].name.toLocaleUpperCase('tr')} · BÖLÜM ${S.i + 1}`;
   if (c.letterSpacing !== undefined) c.letterSpacing = '4px';
   c.fillText(sub, W / 2, 232);
   if (c.letterSpacing !== undefined) c.letterSpacing = '0px';
@@ -2752,13 +2769,15 @@ async function openShare() {
   const s = runStars(), moves = L.moves;
   const blob = await makeShareCard(L, moves, s);
   if (!blob) { toast('Görsel hazırlanamadı.'); return; }
-  const name = L.event !== undefined ? `paintline-${L.eventId}-${L.event + 1}.png` : L.daily ? `paintline-gunluk-${L.daily}.png` : `paintline-bolum-${L.i + 1}.png`;
+  const name = L.tour !== undefined ? `paintline-turnuva-${L.tourWeek}-${L.tour + 1}.png` : L.event !== undefined ? `paintline-${L.eventId}-${L.event + 1}.png` : L.daily ? `paintline-gunluk-${L.daily}.png` : `paintline-bolum-${L.i + 1}.png`;
   shareFile = new File([blob], name, { type: 'image/png' });
   if (shareUrl) URL.revokeObjectURL(shareUrl);
   shareUrl = URL.createObjectURL(blob);
   $('shareImg').src = shareUrl;
   const stars = '★'.repeat(s) + '☆'.repeat(3 - s);
-  $('shareSheet').dataset.text = L.event !== undefined
+  $('shareSheet').dataset.text = L.tour !== undefined
+    ? `Paintline haftalık turnuva ${L.tour + 1}/5: ${moves} hamle ${stars}. Sen kaç hamlede çözersin?`
+    : L.event !== undefined
     ? `Paintline · ${L.eventName} ${L.event + 1}: ${moves} hamle ${stars}. Sen kaç hamlede çözersin?`
     : L.daily
     ? `Paintline günün bulmacası (${shortDate(L.daily)}): ${moves} hamle ${stars}. Sen kaç hamlede çözersin?`
@@ -2989,7 +3008,10 @@ function updateMeter() {
 }
 function updateHud() {
   if (L.rush) rushHud(true);
-  else if (L.event !== undefined) {
+  else if (L.tour !== undefined) {
+    $('lvl').innerHTML = `<span class="wn">Turnuva</span><b>${L.tour + 1}/5</b>`;
+    $('lvl').setAttribute('aria-label', `Haftalık turnuva, bölüm ${L.tour + 1} / 5`);
+  } else if (L.event !== undefined) {
     $('lvl').innerHTML = `<span class="wn">${L.eventName}</span><b>${L.event + 1}</b>`;
     $('lvl').setAttribute('aria-label', `${L.eventName}, bölüm ${L.event + 1}`);
   } else if (L.daily) {
@@ -3030,6 +3052,19 @@ function showWin(s) {
   $('winText').textContent = L.daily ? `${how} Yarın yeni bir bulmaca var.`
     : last ? 'Sıradaki dünya hazırlanıyor. Yakında burada olacak.' : how;
   const nextWorld = WORLDS.find(w => w.from === L.i + 1);
+  if (L.tour !== undefined) {
+    const T = save.tour[L.tourWeek], n = Object.keys(T.best).length;
+    $('winTitle').textContent = 'Turnuva';
+    $('winText').textContent = n < 5 ? `Bu bölümde en iyin ${T.best[L.tour]} hamle · ${n}/5 bölüm. Kalanları bitir, sıralamaya gir.`
+      : `5 bölümün toplamı: ${T.total} hamle.${L.tourBonus ? ` Turnuvayı tamamladın: +${TOUR_FINISH} jeton!` : ''}`;
+    questNote();
+    const next = [0, 1, 2, 3, 4].find(k => k > L.tour && T.best[k] === undefined) ?? [0, 1, 2, 3, 4].find(k => T.best[k] === undefined);
+    L.tourNext = next;
+    $('bNext').textContent = next !== undefined ? `Turnuva ${next + 1}. bölüm` : 'Haritaya dön';
+    $('win').hidden = false; $('bNext').focus({ preventScroll: true });
+    chestDot();
+    return;
+  }
   if (L.event !== undefined) {
     const E = eventById(L.eventId), n = eventDone(E);
     $('winText').textContent = L.eventReward ? `${E.name} tamam! ${E.frameName} çerçevesi ve +${E.coins} jeton senin.`
@@ -3165,7 +3200,7 @@ function openMenu() {
   daily.className = 'world glass daily-card';
   daily.innerHTML = `<span class="badge sun">${SUN}</span><div><b>Günün bulmacası</b><p>${dailyStatus()}</p></div><span class="go">Oyna</span>`;
   daily.onclick = () => { SFX.start(); openDaily(); };
-  if (!masterOn) { box.prepend(daily); const qc = questCard(); daily.after(qc); const ev = eventRegion(); if (ev) qc.after(ev); }
+  if (!masterOn) { box.prepend(daily); const qc = questCard(); daily.after(qc); let last = qc; const tc = tourCard(); if (tc) { qc.after(tc); last = tc; } const ev = eventRegion(); if (ev) last.after(ev); }
   // zorluk anahtarı: bir dünya bitince usta açılır
   const sw = document.createElement('div');
   sw.className = 'mode-wrap';
@@ -3200,6 +3235,10 @@ $('bRetry').onclick = () => { SFX.reset(); restart(); };
 $('bFailRetry').onclick = () => { SFX.reset(); $('fail').hidden = true; restart(); };
 $('bFailUndo').onclick = () => { $('fail').hidden = true; undo(); };
 $('bNext').onclick = () => {
+  if (L.tour !== undefined) {
+    if (L.tourNext !== undefined) { SFX.start(); startTour(L.tourNext, L.tourWeek); } else { SFX.ui(); $('win').hidden = true; openMenu(); }
+    return;
+  }
   if (L.event !== undefined) {
     if (L.event < eventById(L.eventId).levels.length - 1) { SFX.start(); startEvent(L.event + 1); } else { SFX.ui(); $('win').hidden = true; openMenu(); }
     return;
@@ -3904,7 +3943,7 @@ function solveScene(S, limit = 400000) {
 // ---------- İpucu ----------
 // Sıradaki en iyi hamleyi tahtada kesik bir yol olarak gösterir. İpucu alınan denemede en fazla 2 yıldız.
 function showHint() {
-  if (!L || L.won || L.anim || overlayOpen() || L.rush || L.master) return;
+  if (!L || L.won || L.anim || overlayOpen() || L.rush || L.master || L.tour !== undefined) return;
   if (L.hintSeq === undefined || L.hintSeq === null) {
     $('bHint').classList.add('busy');
     // çözücü çalışmadan önce düğmenin "düşünüyor" hâli ekrana çizilsin
@@ -4851,7 +4890,7 @@ async function cloudBoot() {
   renderAccount();
   if (!cloudOn()) return;
   try { if (await finishOAuth()) return; } catch (e) { openAuth('pick'); authMsg('Giriş tamamlanamadı: ' + e.message, true); return; }
-  if (auth) { reconcileSafe(); profileSyncSoon(); flushScores(); }
+  if (auth) { reconcileSafe(); profileSyncSoon(); flushScores().then(tourRewards); }
   else if (!save.welcomed) openAuth('welcome');
 }
 
@@ -4925,7 +4964,7 @@ function lbSubmitDaily(stars) {
 }
 // ---- ekran
 let lbBoard = 'daily', lbScope = 'all', lbFriends = null;
-const lbKey = () => lbBoard === 'daily' ? 'daily:' + dayKey() : 'rush:' + isoWeek();
+const lbKey = () => lbBoard === 'daily' ? 'daily:' + dayKey() : lbBoard === 'tour' ? 'tour:' + isoWeek() : 'rush:' + isoWeek();
 async function loadFriends() {
   const rows = await api(`/rest/v1/friends?select=friend_id,profiles!friends_friend_id_fkey(name,code)&user_id=eq.${auth.user.id}&order=created_at`);
   lbFriends = rows.map(r => ({ id: r.friend_id, name: r.profiles?.name || 'Oyuncu', code: r.profiles?.code || '' }));
@@ -4933,10 +4972,10 @@ async function loadFriends() {
 }
 async function renderLb() {
   const box = $('lbView');
-  $('achTotal').innerHTML = lbBoard === 'daily' ? `Günün bulmacası · ${shortDate(dayKey())}` : 'Zamana karşı · bu hafta';
+  $('achTotal').innerHTML = lbBoard === 'daily' ? `Günün bulmacası · ${shortDate(dayKey())}` : lbBoard === 'tour' ? 'Haftalık turnuva · toplam hamle' : 'Zamana karşı · bu hafta';
   if (!cloudOn()) { box.innerHTML = '<p class="lb-note">Sıralama telefon uygulamasında açılır.</p>'; return; }
   const seg = (name, val, items) => `<div class="mode-switch" role="group" aria-label="${name}">${items.map(([v, t]) => `<button data-${name}="${v}" aria-pressed="${v === val}">${t}</button>`).join('')}</div>`;
-  box.innerHTML = seg('board', lbBoard, [['daily', 'Günün bulmacası'], ['rush', 'Zamana karşı']])
+  box.innerHTML = seg('board', lbBoard, [['daily', 'Günün bulmacası'], ['rush', 'Zamana karşı'], ['tour', 'Turnuva']])
     + (auth ? seg('scope', lbScope, [['all', 'Herkes'], ['friends', 'Arkadaşlarım']]) : '')
     + '<div class="lb-card"><ol class="lb-list" id="lbList"><li class="lb-empty">Yükleniyor…</li></ol><div class="lb-me" id="lbMe"></div></div>'
     + (auth ? `<div class="lb-card"><h3>Arkadaşlar</h3>
@@ -4958,16 +4997,16 @@ async function renderLb() {
     const meId = auth?.user.id, meAt = rows.findIndex(r => r.user_id === meId);
     $('lbList').innerHTML = rows.length ? rows.map((r, i) => {
       const P = r.profiles || {}, d = r.detail || {};
-      const sub = lbBoard === 'daily' ? `${d.moves ?? '?'} hamle` : `${d.boards ?? '?'} tahta · ${d.perfect ?? 0} kusursuz`;
-      const val = lbBoard === 'daily' ? '★'.repeat(d.stars || Math.floor(r.score / 1000)) : fmtNum(r.score);
+      const sub = lbBoard === 'daily' ? `${d.moves ?? '?'} hamle` : lbBoard === 'tour' ? '5 bölüm' : `${d.boards ?? '?'} tahta · ${d.perfect ?? 0} kusursuz`;
+      const val = lbBoard === 'daily' ? '★'.repeat(d.stars || Math.floor(r.score / 1000)) : lbBoard === 'tour' ? `${d.moves ?? 1000 - r.score} hamle` : fmtNum(r.score);
       return `<li${r.user_id === meId ? ' class="me"' : ''}><span class="rk">${i + 1}</span>${avatarHtml({ avatar: P.avatar, frame: P.frame, any: true })}<span class="nm">${escHtml(P.name || 'Oyuncu')}<small>${sub}</small></span><span class="sc">${val}</span></li>`;
-    }).join('') : `<li class="lb-empty">${lbBoard === 'daily' ? 'Bugün henüz kimse çözmedi. İlk sen ol!' : 'Bu hafta henüz tur yok. İlk sen ol!'}</li>`;
+    }).join('') : `<li class="lb-empty">${lbBoard === 'daily' ? 'Bugün henüz kimse çözmedi. İlk sen ol!' : lbBoard === 'tour' ? 'Bu hafta turnuvayı henüz kimse bitirmedi. İlk sen ol!' : 'Bu hafta henüz tur yok. İlk sen ol!'}</li>`;
     let me = '';
     if (auth && meAt < 0 && lbScope === 'all') {
       const mine = await api(`/rest/v1/scores?board=eq.${encodeURIComponent(board)}&user_id=eq.${meId}&select=score`);
       if (mine[0]) me = `Senin sıran: ${await rankOf(board, mine[0].score)}.`;
     }
-    if (auth && meAt < 0 && !me) me = lbBoard === 'daily' ? 'Günün bulmacasını çöz, sıralamaya gir.' : 'Bir zamana karşı turu oyna, sıralamaya gir.';
+    if (auth && meAt < 0 && !me) me = lbBoard === 'daily' ? 'Günün bulmacasını çöz, sıralamaya gir.' : lbBoard === 'tour' ? 'Turnuvanın 5 bölümünü bitir, sıralamaya gir.' : 'Bir zamana karşı turu oyna, sıralamaya gir.';
     $('lbMe').textContent = me;
   } catch (e) {
     $('lbList').innerHTML = `<li class="lb-empty">${navigator.onLine ? 'Sıralama yüklenemedi. Biraz sonra yeniden dene.' : 'İnternet yok; bağlanınca sıralama görünür.'}</li>`;
@@ -5001,6 +5040,110 @@ async function wireFriends() {
     } catch (err) { msg('Eklenemedi: ' + err.message, true); }
   };
   try { if (!lbFriends) await loadFriends(); paint(); } catch (e) {}
+}
+
+// ---------- Haftalık turnuva ----------
+// Her ISO haftasında herkes aynı 5 bölümü oynar: bölümler haftanın adından tohumlanan üreteçle (carveDaily/dressDaily +
+// BFS) her cihazda birebir aynı çıkar; tanımlar save.tour[hafta].defs'e yazılır. Haftanın dünyası (karoları) sırayla döner.
+// Puan = 5 bölümün en iyi hamlelerinin toplamı (az iyi); sunucuya 1000 − toplam gider ('tour:YYYY-Www', 003_turnuva.sql).
+// İpucu ve güçler kapalı. 5'ini bitirene +TOUR_FINISH jeton; hafta bitince ilk üçe jeton + başarım (tourRewards, açılışta).
+const TOUR_FINISH = 3, TOUR_PRIZE = [15, 10, 5], TOUR_UNLOCK = 5;
+const TOUR_SIZE = [{ w: 7, h: 8, slides: 9, par: [6, 9] }, { w: 8, h: 8, slides: 10, par: [7, 10] }, { w: 8, h: 9, slides: 11, par: [9, 12] },
+  { w: 9, h: 9, slides: 12, par: [10, 14] }, { w: 9, h: 10, slides: 13, par: [12, 16] }];
+const tourWorld = wk => (+wk.slice(0, 4) * 53 + +wk.slice(-2)) % WORLDS.length;
+const tourDaysLeft = () => { const d = new Date(), day = d.getDay() || 7; return 8 - day; };
+async function genTourLevel(wk, k) {
+  const world = tourWorld(wk), cfg = { ...DAILY[world], ...TOUR_SIZE[k] }, rnd = mulberry32(hashStr('tour:' + wk + '#' + k));
+  const T = WORLDS[world].theme, hue = T.hues[k % T.hues.length];
+  let best = null, found = 0;
+  for (let t = 0; t < 900 && found < 5; t++) {
+    if (t % 12 === 11) await new Promise(r => setTimeout(r, 0));
+    const g = carveDaily(cfg.w, cfg.h, cfg.slides, rnd);
+    if (!dressDaily(g, cfg, rnd)) continue;
+    const grid = g.map(r => r.join('')), cellsN = grid.join('').replace(/#/g, '').length;
+    if (cellsN < (cfg.w - 2) * (cfg.h - 2) * 0.5) continue;
+    const seq = solveScene(makeScene(null, 0, { grid, par: 0, world, hue }), 150000);
+    if (!seq || seq.length < cfg.par[0] || seq.length > cfg.par[1]) continue;
+    found++;
+    if (!best || cellsN + seq.length * 3 > best.score) best = { score: cellsN + seq.length * 3, def: { grid, par: seq.length, world, hue } };
+  }
+  if (best) return best.def;
+  const lv = WORLDS[world].from + 8 + k * 2; // çok nadir: o dünyanın bir bölümü
+  return { grid: LEVELS[lv].grid, par: LEVELS[lv].par, world, hue };
+}
+let tourBusy = false;
+async function ensureTour(wk) {
+  const T = save.tour[wk] || (save.tour[wk] = { defs: null, best: {}, done: false, total: null, submitted: false, rewarded: false });
+  if (!T.defs && !tourBusy) {
+    tourBusy = true;
+    try { const defs = []; for (let k = 0; k < 5; k++) defs.push(await genTourLevel(wk, k)); T.defs = defs; persist(); }
+    finally { tourBusy = false; }
+  }
+  return T;
+}
+function startTour(k, wk = isoWeek()) {
+  const T = save.tour[wk]; if (!T || !T.defs) return;
+  rush = null;
+  L = makeScene(null, performance.now(), T.defs[k]);
+  L.tour = k; L.tourWeek = wk;
+  enterScene('', false);
+  queueTutorial();
+}
+function recordTour() {
+  const T = save.tour[L.tourWeek], k = L.tour; L.tourBonus = false;
+  if (T.best[k] === undefined || L.moves < T.best[k]) T.best[k] = L.moves;
+  if (Object.keys(T.best).length < 5) return;
+  const total = [0, 1, 2, 3, 4].reduce((a, j) => a + T.best[j], 0);
+  if (!T.done) { T.done = true; save.stats.tourDone++; L.tourBonus = true; window.grantReward?.({ w: 0, coins: TOUR_FINISH }); }
+  if (T.total === null || total < T.total || !T.submitted) {
+    T.total = Math.min(total, T.total ?? total);
+    const L0 = L;
+    lbSubmit('tour:' + L0.tourWeek, 1000 - T.total, { moves: T.total }).then(rank => {
+      if (!rank) return; T.submitted = true; T.rank = rank; persist();
+      const add = () => { if (!$('win').hidden && L === L0) $('winText').textContent += ` Turnuva sıralamasında ${rank}.`; };
+      $('win').hidden ? setTimeout(add, 900) : add();
+    });
+  }
+}
+// hafta bittiyse: son sıraya göre ödül (bir kez)
+async function tourRewards() {
+  if (!auth || !cloudOn()) return;
+  const now = isoWeek();
+  for (const [wk, T] of Object.entries(save.tour)) {
+    if (wk >= now || T.rewarded || !T.done || T.total === null) continue;
+    try {
+      const rank = await rankOf('tour:' + wk, 1000 - T.total);
+      if (!rank) continue;
+      T.rewarded = true; T.rank = rank;
+      const coins = TOUR_PRIZE[rank - 1] || 0;
+      if (rank <= 3) { save.stats.tourPodium++; if (rank === 1) save.stats.tourWins++; window.grantReward?.({ w: 0, coins }); }
+      persist();
+      if (checkAch().length) popAch(600);
+      toast(rank <= 3 ? `Geçen haftanın turnuvasında ${rank}. oldun! +${coins} jeton` : `Geçen haftanın turnuvasını ${rank}. sırada bitirdin.`);
+    } catch (e) {}
+  }
+}
+const TROPHY = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ACH_ICON.trophy + '</svg>';
+function tourCard() {
+  const wk = isoWeek(), open = Object.keys(save.best).length >= TOUR_UNLOCK;
+  const card = document.createElement('section');
+  card.className = 'quests glass tour-card';
+  const T = save.tour[wk], left = tourDaysLeft();
+  const head = `<div class="q-head"><b>${TROPHY}Haftalık turnuva</b><small>${left > 1 ? `${left} gün kaldı` : 'Son gün!'}</small></div>`;
+  if (!open) { card.innerHTML = head + `<p class="tour-note">${TOUR_UNLOCK} bölüm bitirince açılır. Her hafta herkes aynı 5 bölümü oynar; en az toplam hamle kazanır.</p>`; return card; }
+  if (!T || !T.defs) {
+    card.innerHTML = head + '<p class="tour-note">Bu haftanın bölümleri hazırlanıyor…</p>';
+    ensureTour(wk).then(() => { if (card.isConnected) card.replaceWith(tourCard()); }).catch(() => { card.querySelector('.tour-note').textContent = 'Bölümler hazırlanamadı. Haritayı yeniden aç.'; });
+    return card;
+  }
+  const n = Object.keys(T.best).length;
+  card.innerHTML = head
+    + `<div class="tour-row">${T.defs.map((d, k) => `<button data-k="${k}" class="${T.best[k] !== undefined ? 'done' : ''}" aria-label="Turnuva ${k + 1}. bölüm${T.best[k] !== undefined ? `, en iyi ${T.best[k]} hamle` : ''}"><b>${k + 1}</b><small>${T.best[k] !== undefined ? T.best[k] + ' h' : 'hedef ' + d.par}</small></button>`).join('')}</div>`
+    + `<div class="tour-sum"><span>${n === 5 ? `Toplam ${T.total} hamle${T.rank ? ` · ${T.rank}. sıra` : ''}` : `${n}/5 bölüm`}</span><button class="btn" data-lb>Sıralama</button></div>`
+    + `<p class="tour-note">İpucu ve güç yok. 5'ini bitirene +${TOUR_FINISH} jeton; hafta sonunda ilk üçe ${TOUR_PRIZE.join(' / ')} jeton ve rozet.${auth ? '' : ' Sıralamaya girmek için giriş yap.'}</p>`;
+  card.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { $('menu').hidden = true; SFX.start(); startTour(+b.dataset.k, wk); });
+  card.querySelector('[data-lb]').onclick = () => { SFX.ui(); $('menu').hidden = true; lbBoard = 'tour'; openAch(); showAchTab('lb'); };
+  return card;
 }
 
 // ---------- Başlat ----------
