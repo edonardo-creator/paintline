@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="aa22e5f38261c2e2">
+<meta name="paintline-version" content="6936ca114a9991cd">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -616,6 +616,8 @@
   .pw-eye { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-height: 40px; font-size: .85rem; }
   .auth-card input:focus { outline: 2px solid var(--lv); outline-offset: 1px; }
   .auth-fine { color: var(--muted); font-size: .78rem; line-height: 1.4; }
+  .auth-privacy { color: var(--muted); text-decoration: underline; }
+  .acct p a { color: inherit; }
   .auth-msg { min-height: 1.2em; margin: 0; font-size: .88rem; font-weight: 600; color: var(--muted); }
   .auth-msg.err { color: hsl(0 68% 48%); }
   .pick-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -1104,6 +1106,7 @@
       </div>
       <button class="btn link" id="bAuthGuest">Misafir olarak oyna</button>
       <small class="auth-fine" id="authFine">Misafir ilerlemesi yalnızca bu telefonda durur. Sonra Ayarlar → Hesap'tan giriş yapınca hesabına taşınır.</small>
+      <a class="auth-fine auth-privacy" href="gizlilik.html" target="_blank" rel="noopener">Gizlilik politikası</a>
     </div>
     <form class="auth-step" data-step="email" hidden>
       <h2 id="authFormTitle">E-postayla giriş</h2>
@@ -4787,7 +4790,7 @@ function renderAccount(note) {
   if (!auth) {
     box.innerHTML = `<div class="who">${avatarHtml()}<div><b>Misafir</b><small>İlerleme yalnızca bu telefonda</small></div></div>
       <div class="row"><button class="btn primary" id="bAcctIn">Giriş yap · hesap oluştur</button></div>
-      <p>Google ya da e-postayla giriş yaparsan ilerlemen ve ayarların başka telefonlardan da açılır.</p>`;
+      <p>Google ya da e-postayla giriş yaparsan ilerlemen ve ayarların başka telefonlardan da açılır. <a href="gizlilik.html" target="_blank" rel="noopener">Gizlilik politikası</a></p>`;
     $('bAcctIn').onclick = () => { SFX.ui(); closeSettings(); openAuth('settings'); };
     return;
   }
@@ -4796,7 +4799,7 @@ function renderAccount(note) {
     + (acctConfirm
       ? `<p class="danger">Hesabın ve buluttaki kaydın kalıcı olarak silinir. Bu telefondaki ilerleme kalır.</p><div class="row"><button class="btn" id="bAcctNo">Vazgeç</button><button class="btn danger solid" id="bAcctYes">Evet, hesabı sil</button></div>`
       : `<div class="row"><button class="btn" id="bAcctSync">Şimdi eşitle</button><button class="btn" id="bAcctOut">Çıkış yap</button></div><button class="btn link danger" id="bAcctDel">Hesabı sil</button>
-         <p>Saklananlar: e-posta adresin${u.provider === 'google' ? ', Google hesabındaki adın' : ''} ve oyun kaydın (ilerleme, ayarlar, profil adı).</p>`);
+         <p>Saklananlar: e-posta adresin${u.provider === 'google' ? ', Google hesabındaki adın' : ''} ve oyun kaydın (ilerleme, ayarlar, profil adı). <a href="gizlilik.html" target="_blank" rel="noopener">Gizlilik politikası</a></p>`);
   if (acctConfirm) {
     $('bAcctNo').onclick = () => { acctConfirm = false; renderAccount(); };
     $('bAcctYes').onclick = async () => { acctConfirm = false; try { await deleteAccount(); } catch (e) { renderAccount('Silinemedi: ' + e.message); } };
