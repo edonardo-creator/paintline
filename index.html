@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="2d053cd214a5ca7e">
+<meta name="paintline-version" content="1ee19ad7ef8b4fc1">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -315,7 +315,7 @@
   .menu { position: fixed; inset: 0; z-index: 30; overflow-y: auto; animation: slideUp .38s cubic-bezier(.2, .8, .2, 1); }
   @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } }
   .menu-top {
-    position: sticky; top: 0; z-index: 2;
+    position: sticky; top: 0; z-index: 6; /* haritadaki öne çıkan duraklar ve levhalar başlığın altında kalsın */
     background: color-mix(in srgb, var(--bg) 72%, transparent);
     -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
     border-bottom: 1px solid var(--line);
@@ -489,6 +489,75 @@
   :root[data-motion="reduce"] .scene *, :root[data-motion="reduce"] .scene .prop { animation: none !important; }
   :root[data-motion="reduce"] .scene .amb { display: none; }
   @media (prefers-reduced-motion: reduce) { .scene *, .scene .prop { animation: none !important; } .scene .amb { display: none; } }
+  /* Hikâyeleşen harita: dünyalar kesintisiz bir yolculuk; her biri bir bölüm (levha + karakter), yolda hikâye sahneleri */
+  .worlds > .region.chapter, .worlds > .region.fog { margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); border-radius: 0; border: 0; box-shadow: none; }
+  .worlds > .region.chapter + .region.chapter, .worlds > .region.chapter + .region.fog { margin-top: -16px; }
+  .region.chapter {
+    padding: 46px 14px 0;
+    background:
+      radial-gradient(75% 170px at 50% 190px, color-mix(in oklab, var(--wc) 24%, transparent), transparent),
+      var(--region-pattern, none),
+      linear-gradient(180deg, color-mix(in oklab, var(--pc) 14%, var(--bg)), color-mix(in oklab, var(--wc) 15%, var(--bg)) 220px, color-mix(in oklab, var(--wc) 8%, var(--bg)) 55%, color-mix(in oklab, var(--wc) 14%, var(--bg)));
+  }
+  .region.chapter:first-of-type { border-radius: 28px 28px 0 0; }
+  .ch-head { display: block; position: relative; z-index: 3; width: min(100%, 300px); margin: 0 auto; padding: 36px 18px 14px; box-sizing: border-box; text-align: center; border-radius: 24px;
+    background: linear-gradient(180deg, var(--solid), color-mix(in oklab, var(--wc) 6%, var(--solid)));
+    border: 1px solid color-mix(in oklab, var(--wc) 34%, var(--line));
+    box-shadow: inset 0 1px 0 var(--hi), 0 22px 44px -26px color-mix(in oklab, var(--wc) 80%, #000); }
+  .ch-head::before { content: ''; position: absolute; inset: 5px; border-radius: 19px; border: 1px dashed color-mix(in oklab, var(--wc) 30%, transparent); pointer-events: none; }
+  .ch-av { position: absolute; left: 50%; top: -34px; width: 64px; height: 64px; margin-left: -32px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+    background: radial-gradient(circle at 50% 35%, color-mix(in oklab, var(--wc) 22%, #fff), color-mix(in oklab, var(--wc) 55%, var(--solid)));
+    box-shadow: 0 0 0 4px var(--solid), 0 0 0 6px color-mix(in oklab, var(--wc) 55%, transparent), 0 12px 24px -10px rgba(0, 0, 0, .5); }
+  .ch-av svg { width: 100%; height: 100%; display: block; }
+  .ch-no { display: flex; align-items: center; justify-content: center; gap: 10px; font: 800 .64rem var(--f-body); letter-spacing: .24em; text-transform: uppercase; color: color-mix(in oklab, var(--wc), var(--ink) 40%); }
+  .ch-no::before, .ch-no::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
+  .ch-name { margin: 6px 0 3px; font: 800 1.45rem var(--f-display); letter-spacing: -.01em; line-height: 1.15; }
+  .ch-sub { margin: 0; font-size: .82rem; color: var(--muted); font-weight: 600; font-style: italic; }
+  .ch-meta { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: .78rem; font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ch-meta span { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .ch-meta svg { width: 14px; height: 14px; }
+  .ch-meta .bar { flex: 1; height: 6px; border-radius: 3px; background: color-mix(in oklab, var(--ink) 9%, transparent); overflow: hidden; }
+  .ch-meta .bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #EFA017, #FFD66B); }
+  .region.chapter .seal-note { text-align: center; }
+  .region.chapter .trail { margin-top: 10px; }
+  .region.chapter .trail .road-shade { stroke: color-mix(in oklab, var(--wc) 40%, #000); stroke-width: 30; opacity: .1; }
+  .region.chapter .trail .road { stroke: color-mix(in oklab, var(--wc) 14%, var(--solid)); stroke-width: 22; }
+  .region.chapter .trail .road-dash { stroke: color-mix(in oklab, var(--wc) 45%, transparent); stroke-width: 2.5; stroke-dasharray: 2 12; }
+  .region.chapter .trail .road-done { stroke: var(--wc); stroke-width: 11; }
+  .region.chapter .node::after { content: ''; position: absolute; left: 50%; top: 86%; width: 46px; height: 12px; margin-left: -23px; border-radius: 50%; z-index: -1; background: radial-gradient(closest-side, rgba(10, 14, 40, .28), transparent); }
+  .story-pin { position: absolute; z-index: 2; width: 50px; height: 50px; padding: 0; border: 0; border-radius: 50%; transform: translate(-50%, -50%); cursor: pointer;
+    background: radial-gradient(circle at 50% 35%, color-mix(in oklab, var(--wc) 18%, #fff), color-mix(in oklab, var(--wc) 45%, var(--solid)));
+    box-shadow: 0 0 0 3px var(--solid), 0 0 0 5px color-mix(in oklab, var(--wc) 60%, transparent), 0 12px 22px -10px rgba(0, 0, 0, .55); }
+  .story-pin svg { width: 100%; height: 100%; display: block; }
+  .story-pin.end { width: 62px; height: 62px; }
+  .story-pin .tag { position: absolute; top: calc(100% + 7px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 3px 9px; border-radius: 999px;
+    font: 800 .6rem var(--f-body); letter-spacing: .12em; text-transform: uppercase; color: color-mix(in oklab, var(--wc), var(--ink) 45%); background: var(--solid); box-shadow: 0 2px 8px -3px rgba(0, 0, 0, .3); }
+  .story-pin.locked { background: color-mix(in oklab, var(--ink) 8%, var(--solid)); box-shadow: 0 0 0 3px var(--solid), 0 0 0 5px var(--line); }
+  .story-pin.locked svg { filter: grayscale(1); opacity: .35; }
+  .story-pin.locked .tag { color: var(--muted); }
+  .story-pin.new { animation: pinGlow 1.7s ease-in-out infinite; }
+  .story-pin.new::after { content: '!'; position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; border-radius: 50%; background: hsl(28 95% 55%); color: #fff; font: 800 .74rem/20px var(--f-display); text-align: center; box-shadow: 0 0 0 2px var(--solid); }
+  @keyframes pinGlow { 50% { box-shadow: 0 0 0 3px var(--solid), 0 0 0 5px var(--wc), 0 0 0 16px color-mix(in oklab, var(--wc) 0%, transparent), 0 12px 22px -10px rgba(0, 0, 0, .55); } }
+  :root[data-motion="reduce"] .story-pin.new { animation: none; }
+  .region.fog .fog-av { width: 92px; height: 92px; display: block; margin-bottom: 4px; animation: storyBob 3.4s ease-in-out infinite alternate; }
+  .region.fog .fog-av svg { width: 100%; height: 100%; }
+  .region.fog .fog-road { position: absolute; left: 50%; top: 0; width: 22px; height: 64px; margin-left: -11px; border-radius: 0 0 11px 11px; background: linear-gradient(color-mix(in oklab, var(--ink) 10%, transparent), transparent); }
+  #story { z-index: 57; }
+  .story-card { gap: 10px; text-align: left; align-items: stretch; }
+  .story-card h2 { text-align: left; }
+  .story-art { position: relative; height: 176px; border-radius: 20px; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; gap: 2px; padding-bottom: 6px;
+    background: radial-gradient(60% 70% at 50% 100%, color-mix(in oklab, var(--wc) 40%, #fff), transparent), linear-gradient(165deg, color-mix(in oklab, var(--wc) 30%, var(--solid)), color-mix(in oklab, var(--wc2) 45%, var(--solid))); }
+  .story-art::before { content: ''; position: absolute; inset: 0; opacity: .55; background: radial-gradient(circle, #fff 0 1.4px, transparent 2px) 0 0 / 26px 26px, radial-gradient(circle, #fff 0 1px, transparent 1.6px) 13px 11px / 26px 26px; -webkit-mask-image: linear-gradient(#000, transparent 70%); mask-image: linear-gradient(#000, transparent 70%); }
+  .story-art::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: color-mix(in oklab, var(--wc) 30%, var(--solid)); border-radius: 50% 50% 0 0 / 100% 100% 0 0; opacity: .8; }
+  .story-art .who, .story-art .hero { position: relative; z-index: 1; display: block; }
+  .story-art .who { width: 132px; height: 132px; animation: storyBob 3s ease-in-out infinite alternate; }
+  .story-art .hero { width: 72px; height: 72px; animation: storyBob 2.2s ease-in-out infinite alternate-reverse; }
+  @keyframes storyBob { from { transform: translateY(2px); } to { transform: translateY(-6px); } }
+  :root[data-motion="reduce"] .story-art *, :root[data-motion="reduce"] .region.fog .fog-av { animation: none; }
+  .story-text p { margin: 0 0 8px; color: var(--ink); font-size: 1rem; line-height: 1.55; text-wrap: pretty; text-align: left; opacity: 0; animation: lootIn .45s ease-out forwards; }
+  .story-text p:nth-child(2) { animation-delay: .25s; } .story-text p:nth-child(3) { animation-delay: .5s; } .story-text p:nth-child(4) { animation-delay: .75s; }
+  .story-text p b { color: color-mix(in oklab, var(--wc), var(--ink) 35%); }
+  :root[data-motion="reduce"] .story-text p { opacity: 1; animation: none; }
   /* sis: bir sonraki dünya */
   .region.fog {
     --wc: var(--muted); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px;
@@ -1238,6 +1307,16 @@
   </div>
 </div>
 
+<div class="sheet center" id="story" hidden>
+  <div class="card story-card" role="dialog" aria-modal="true" aria-labelledby="storyTitle">
+    <div class="story-art" id="storyArt" aria-hidden="true"></div>
+    <small class="tut-eyebrow" id="storyEyebrow"></small>
+    <h2 id="storyTitle"></h2>
+    <div class="story-text" id="storyText"></div>
+    <button class="btn primary big" id="bStoryOk">Devam</button>
+  </div>
+</div>
+
 <div class="sheet center" id="closet" hidden>
   <div class="card closet-card" role="dialog" aria-modal="true" aria-labelledby="closetTitle">
     <div class="closet-head"><div><small class="tut-eyebrow">Koleksiyon</small><h2 id="closetTitle">Top ve iz</h2></div><span class="closet-bal" id="closetBal"></span></div>
@@ -1644,7 +1723,7 @@ const demoCv = $('demo'), dctx = demoCv.getContext('2d');
 // hareketi azalt: sistem ayarı ya da oyundaki 'Azalt' seçimi (applyA11y günceller)
 const motionMQ = matchMedia('(prefers-reduced-motion: reduce)');
 let reduceMotion = motionMQ.matches;
-const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('login').hidden || !$('closet').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
+const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('login').hidden || !$('closet').hidden || !$('story').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
 const hsl = ([h, s], l) => `hsl(${h} ${s}% ${l}%)`;
 
 // ---------- Kayıt ----------
@@ -1679,6 +1758,7 @@ if (save.haptics === undefined) save.haptics = true;
 if (!save.theme) save.theme = 'auto';
 // erişilebilirlik: desenli karolar, yazı boyu (0–2), yön düğmeleri (off/right/left), hareket (auto/reduce)
 save.a11y = Object.assign({ pattern: false, text: 0, dpad: 'off', motion: 'auto' }, save.a11y);
+if (!save.story) save.story = {}; // okunan hikâye sahneleri: 'dünya-sahne' → 1
 if (!save.closet) save.closet = { ball: 'world', trail: 'soft', owned: ['world', 'soft'] }; // top ve iz koleksiyonu
 if (!save.login) save.login = { n: 0, last: null, total: 0 }; // günlük giriş ödülü: bu turda alınan gün, son alınan tarih, toplam
 if (!save.duels) save.duels = {}; // meydan okumalar: tahta özeti → { id, def, src, n, a, f, m, best, won, t }
@@ -3365,6 +3445,8 @@ function showWin(s) {
   $('bNext').textContent = L.daily ? 'Maceraya dön' : last ? 'Bölümler' : nextWorld ? `Yeni dünya: ${nextWorld.name}` : 'Sonraki bölüm';
   questNote();
   if (chestsReady() > chestsBefore) $('winText').textContent += ' Haritada bir sandık açılmaya hazır!';
+  { const w = worldOf(L.i), k = L.i === WORLDS[w].from + 9 ? 1 : L.i === WORLDS[w].to ? 2 : -1;
+    if (k > 0 && STORY[w] && !save.story[storyKey(w, k)]) $('winText').textContent += ` Haritada hikâyenin yeni sahnesi açıldı: “${STORY[w].beats[k].t}”.`; }
   chestDot();
   $('win').hidden = false;
   $('bNext').focus({ preventScroll: true });
@@ -3393,6 +3475,110 @@ function mapPath(points) {
   }
   return d;
 }
+// ---------- Hikâye ----------
+// Renk Ülkesi'ne Solgun adında gri bir sis çöker; atölyenin en küçük boya damlası Damla (oyuncunun topu) her dünyada bir
+// yardımcıyla tanışarak renkleri geri getirir. Her dünya bir bölüm; haritada üç sahne: başlangıç (her zaman açık),
+// ara sahne (10. bölüm bitince) ve final (dünya bitince). Okunanlar save.story['dünya-sahne'].
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+const eyes = (x, y, s = 1, sleepy) => sleepy
+  ? `<path d="M${x - 13 * s} ${y}q4 ${3 * s} 8 0M${x + 5 * s} ${y}q4 ${3 * s} 8 0" stroke="#2A2E40" stroke-width="${2.6 * s}" fill="none" stroke-linecap="round"/>`
+  : `<ellipse cx="${x - 9 * s}" cy="${y}" rx="${4.4 * s}" ry="${5.2 * s}" fill="#fff"/><ellipse cx="${x + 9 * s}" cy="${y}" rx="${4.4 * s}" ry="${5.2 * s}" fill="#fff"/>`
+    + `<circle cx="${x - 8 * s}" cy="${y + 1 * s}" r="${2.6 * s}" fill="#1B1F33"/><circle cx="${x + 10 * s}" cy="${y + 1 * s}" r="${2.6 * s}" fill="#1B1F33"/>`
+    + `<circle cx="${x - 7 * s}" cy="${y - 0.4 * s}" r="${0.9 * s}" fill="#fff"/><circle cx="${x + 11 * s}" cy="${y - 0.4 * s}" r="${0.9 * s}" fill="#fff"/>`;
+const smile = (x, y, s = 1, sad) => `<path d="M${x - 5 * s} ${y}q${5 * s} ${(sad ? -4 : 5) * s} ${10 * s} 0" stroke="#1B1F33" stroke-width="${2.4 * s}" fill="none" stroke-linecap="round"/>`
+  + `<ellipse cx="${x - 13 * s}" cy="${y - 2 * s}" rx="${3.4 * s}" ry="${2 * s}" fill="#FF7A90" opacity=".45"/><ellipse cx="${x + 13 * s}" cy="${y - 2 * s}" rx="${3.4 * s}" ry="${2 * s}" fill="#FF7A90" opacity=".45"/>`;
+const CHAR = {
+  damla: `<path d="M50 10C50 10 20 44 20 63a30 30 0 0 0 60 0C80 44 50 10 50 10z" fill="hsl(350 78% 58%)"/><path d="M50 10C50 10 20 44 20 63a30 30 0 0 0 16 26C30 70 38 40 50 10z" fill="#fff" opacity=".18"/><ellipse cx="38" cy="48" rx="5" ry="8" fill="#fff" opacity=".6" transform="rotate(25 38 48)"/>${eyes(50, 62)}${smile(50, 75)}`,
+  firca: `<path d="M44 82h12l-2 14h-8z" fill="hsl(28 50% 45%)"/><rect x="40" y="70" width="20" height="13" rx="2" fill="#C7CCD6"/><path d="M28 70c0-24 6-40 22-46 16 6 22 22 22 46z" fill="hsl(36 70% 60%)"/><path d="M30 64c4-8 10-6 12 0s8 6 10 0 10-6 18 2v4H30z" fill="hsl(200 70% 55%)"/><path d="M24 30c4-12 22-18 34-10 6 4 14 2 16-2-2 10-12 14-22 12-10-2-20 2-28 0z" fill="hsl(350 70% 52%)"/><circle cx="72" cy="17" r="4" fill="hsl(350 70% 45%)"/>${eyes(50, 44, .9)}<path d="M38 56c4-4 8-1 12-1s8-3 12 1c-4 4-8 1-12 1s-8 3-12-1z" fill="#fff"/>`,
+  ahtapot: `<path d="M24 60c-6 10-12 18-4 26M36 64c-2 12-6 20 2 26M64 64c2 12 6 20-2 26M76 60c6 10 12 18 4 26" stroke="hsl(330 60% 58%)" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M50 20c20 0 30 15 30 32 0 10-5 16-10 18H30c-5-2-10-8-10-18 0-17 10-32 30-32z" fill="hsl(330 62% 62%)"/><path d="M26 30h48l-4-12H30z" fill="hsl(225 45% 30%)"/><rect x="24" y="28" width="52" height="6" rx="3" fill="hsl(225 45% 22%)"/><circle cx="50" cy="22" r="4" fill="hsl(45 95% 60%)"/>${eyes(50, 50)}${smile(50, 62)}`,
+  lumi: `<circle cx="50" cy="56" r="38" fill="hsl(58 100% 70%)" opacity=".25"/><ellipse cx="30" cy="40" rx="16" ry="10" fill="#fff" opacity=".6" transform="rotate(-25 30 40)"/><ellipse cx="70" cy="40" rx="16" ry="10" fill="#fff" opacity=".6" transform="rotate(25 70 40)"/><path d="M42 26c-4-8-10-10-14-8M58 26c4-8 10-10 14-8" stroke="#3A3350" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="28" cy="18" r="3" fill="hsl(58 100% 65%)"/><circle cx="72" cy="18" r="3" fill="hsl(58 100% 65%)"/><ellipse cx="50" cy="70" rx="16" ry="18" fill="hsl(58 100% 62%)"/><circle cx="50" cy="46" r="20" fill="hsl(268 40% 38%)"/>${eyes(50, 44, .85)}${smile(50, 54, .8)}`,
+  pof: `<ellipse cx="50" cy="58" rx="28" ry="34" fill="#232A3D"/><ellipse cx="50" cy="64" rx="18" ry="24" fill="#fff"/><path d="M28 62c-8 6-10 14-6 18M72 62c8 6 10 14 6 18" stroke="#232A3D" stroke-width="7" stroke-linecap="round"/>${eyes(50, 44, .85)}<path d="M45 52h10l-5 6z" fill="hsl(35 100% 55%)"/><path d="M28 60c10 6 34 6 44 0v8c-10 6-34 6-44 0z" fill="hsl(355 75% 55%)"/><path d="M64 66l6 16h-8z" fill="hsl(355 75% 50%)"/><path d="M38 92h10M52 92h10" stroke="hsl(35 100% 55%)" stroke-width="5" stroke-linecap="round"/>`,
+  vida: `<path d="M50 8v12" stroke="#5A6378" stroke-width="3"/><circle cx="50" cy="8" r="5" fill="hsl(4 85% 60%)"/><rect x="22" y="20" width="56" height="46" rx="12" fill="hsl(205 25% 70%)"/><rect x="28" y="28" width="44" height="26" rx="8" fill="#1E2738"/><circle cx="40" cy="41" r="5" fill="hsl(185 90% 60%)"/><circle cx="60" cy="41" r="5" fill="hsl(185 90% 60%)"/><path d="M42 59h16" stroke="#1E2738" stroke-width="3" stroke-linecap="round"/><rect x="30" y="68" width="40" height="24" rx="8" fill="hsl(205 25% 62%)"/><circle cx="50" cy="80" r="5" fill="hsl(45 95% 58%)"/><circle cx="26" cy="43" r="3" fill="#8A93A8"/><circle cx="74" cy="43" r="3" fill="#8A93A8"/>`,
+  prizma: `<path d="M50 8l22 18v44L50 92 28 70V26z" fill="hsl(280 60% 66%)"/><path d="M50 8v84M28 26l22 14 22-14M28 70l22-14 22 14" stroke="#fff" stroke-opacity=".35" stroke-width="1.6" fill="none"/><path d="M50 8l22 18-22 14z" fill="#fff" opacity=".22"/>${eyes(50, 50, .85)}${smile(50, 62, .8)}<path d="M40 70c3 8 7 12 10 18 3-6 7-10 10-18-6 3-14 3-20 0z" fill="#fff" opacity=".7"/>`,
+  tik: `<path d="M30 20l-8-8M70 20l8-8" stroke="#8A6A2A" stroke-width="4" stroke-linecap="round"/><circle cx="22" cy="12" r="7" fill="hsl(42 85% 55%)"/><circle cx="78" cy="12" r="7" fill="hsl(42 85% 55%)"/><circle cx="50" cy="54" r="36" fill="hsl(40 60% 92%)" stroke="hsl(36 60% 42%)" stroke-width="5"/><path d="M50 22v5M50 81v5M18 54h5M77 54h5" stroke="#5A4A2A" stroke-width="3"/>${eyes(50, 46, .9)}<circle cx="59" cy="47" r="6.5" fill="none" stroke="hsl(42 85% 45%)" stroke-width="2"/><path d="M36 62c6-6 10-2 14-2s8-4 14 2c-6 3-10 0-14 0s-8 3-14 0z" fill="#5A4A2A"/>`,
+  esinti: `<path d="M74 52c10-4 18 0 20 6-8-2-14 0-18 4z" fill="hsl(200 70% 62%)"/><circle cx="50" cy="56" r="30" fill="hsl(200 75% 70%)"/><path d="M28 60c-10-2-16 6-16 12 8-4 14-4 20 0z" fill="hsl(200 70% 58%)"/><ellipse cx="52" cy="66" rx="16" ry="14" fill="#fff" opacity=".85"/><path d="M44 28c2-8 8-12 14-10-4 2-6 6-6 10z" fill="hsl(200 70% 58%)"/>${eyes(50, 50, .85)}<path d="M45 58l5 7 5-7z" fill="hsl(35 100% 55%)"/>`,
+  solgun: `<path d="M22 70a16 16 0 0 1 2-30 22 22 0 0 1 40-8 16 16 0 0 1 16 22 14 14 0 0 1-4 16z" fill="hsl(220 8% 74%)"/><path d="M30 70a12 12 0 0 1 0-20" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none"/>${eyes(50, 52, .9, true)}${smile(50, 62, .7, true)}<path d="M64 58c0 3-1.6 5-3 5s-3-2-3-5 3-7 3-7 3 4 3 7z" fill="hsl(205 40% 80%)"/>`,
+};
+const charSvg = (k, cls = '') => `<svg class="${cls}" viewBox="0 0 100 100" aria-hidden="true">${CHAR[k] || CHAR.damla}</svg>`;
+const STORY = [
+  { who: 'firca', tag: "Usta Fırça'nın atölyesi", beats: [
+    { t: 'Renklerin kaybolduğu sabah', p: ["Bir sabah Renk Ülkesi'ne gri bir sis çöktü: Solgun. Dokunduğu her şeyin rengini emdi.", 'Atölyenin en küçük boya damlası Damla, devrilen kovadan yuvarlanıp çıktı.', '<b>Usta Fırça:</b> “Yolun her karesini boyarsan renkler geri döner. Haydi küçük, kaydır!”'] },
+    { t: 'Ustanın sırrı', p: ['<b>Usta Fırça:</b> “İyi bir ressam boyayı israf etmez. Az hamle, temiz iz.”', "Damla'nın geçtiği yerlerde tuvaller yeniden renkleniyordu. Ama pencereden süzülen Solgun, kıyıya doğru ilerliyordu."] },
+    { t: 'Atölye yeniden renkli', p: ['Son kare de boyandığında atölye gökkuşağı gibi parladı.', "<b>Usta Fırça:</b> “Sis Mercan Koyu'na indi. Kaptan Mürekkep'i bul, denizin akıntılarını o bilir.”", 'Damla, ustanın çizdiği haritayı alıp kıyıya yuvarlandı.'] },
+  ] },
+  { who: 'ahtapot', tag: "Kaptan Mürekkep'in koyu", beats: [
+    { t: 'Griye dönen deniz', p: ['Mercanlar solmuş, balıklar renksiz yüzüyordu.', '<b>Kaptan Mürekkep:</b> “Sekiz kolumla akıntıları yönetirim ama sis yönümü şaşırttı. Durdurucular seni tutar, oklar yön verir. Ustaca kullan!”'] },
+    { t: 'Mürekkep bulutu', p: ['<b>Kaptan Mürekkep:</b> “Sana bir sır vereyim: Solgun, renklerin bir arada olduğu yerden uzak durur.”', "Damla boyadıkça mercanlar yeniden pembeleşti, yengeçler alkış tuttu."] },
+    { t: 'Akıntı yön değiştirdi', p: ['Koy rengârenk ışıldadı. Kaptan Mürekkep kollarından birini gökyüzüne uzattı.', "<b>Kaptan Mürekkep:</b> “Sis geceye kaçtı. Gece Bahçesi'nde Lumi sana ışık tutar.”"] },
+  ] },
+  { who: 'lumi', tag: "Lumi'nin bahçesi", beats: [
+    { t: 'Işığı sönen bahçe', p: ["Gece Bahçesi'nde çiçekler kapanmış, kapılar sessizce dönüyordu.", '<b>Lumi:</b> “Ben Lumi! Bu kapılar seni bahçenin bir ucundan öbürüne taşır. Birinden girersen eşinden çıkarsın.”'] },
+    { t: 'Ateş böceklerinin şarkısı', p: ['Damla her kapıdan geçtiğinde ardında küçük ışıklar kalıyordu.', '<b>Lumi:</b> “Arkadaşlarım ışığını gördü. Bak, yeniden uçuşuyorlar!”'] },
+    { t: 'Bahçe uyandı', p: ['Ay, bahçenin üstünde yeniden gülümsedi.', "<b>Lumi:</b> “Solgun kuzeye, Buzul'a kaçtı. Oradaki buzlar kaygandır, dikkatli ol!”"] },
+  ] },
+  { who: 'pof', tag: "Pof'un buzulu", beats: [
+    { t: 'Donmuş renkler', p: ["Buzul'da her şey bembeyazdı. Belki de biraz fazla.", '<b>Pof:</b> “Merhaba! Ben Pof. Çatlak buzun üstünden bir kez geçebilirsin, sonra kırılır. Yarıklar ise seni öbür yana kaydırır.”'] },
+    { t: 'Kardan adamın atkısı', p: ['Damla boyadıkça kardan adamların atkıları renk kazandı.', '<b>Pof:</b> “Solgun burada uzun süre saklanamaz. Renkler içimizi ısıtıyor!”'] },
+    { t: 'Kuzey ışıkları', p: ['Gökyüzünde yeşil ve mor kuzey ışıkları dans etti.', "<b>Pof:</b> “Sis dumanların arasına, Fabrika'ya sığındı. Vida'ya benden selam söyle!”"] },
+  ] },
+  { who: 'vida', tag: "Vida'nın fabrikası", beats: [
+    { t: 'Duran makineler', p: ["Renk Fabrikası'nın bütün çarkları durmuştu; Solgun boya kazanlarını boşaltmıştı.", '<b>Vida:</b> “Bip! Şalterler bariyerleri açıp kapatır. Yıldırım üstünden atlatır, çark duvarın içinden geçirir. Önce hesapla, sonra kaydır.”'] },
+    { t: 'Kazanlar ısınıyor', p: ['<b>Vida:</b> “Üretim yüzde elli! Boya kazanları yeniden kaynıyor.”', 'Bacalardan gri değil, pembe ve turkuaz dumanlar yükseldi.'] },
+    { t: 'Fabrika yeniden çalışıyor', p: ['Bantlardan yeni boya kovaları akmaya başladı.', "<b>Vida:</b> “Sinyal alıyorum: Solgun yerin altına, Kristal Mağara'ya indi.”"] },
+  ] },
+  { who: 'prizma', tag: "Bilge Prizma'nın mağarası", beats: [
+    { t: 'Işıksız kristaller', p: ['Mağaradaki kristaller ışığı yansıtmayı unutmuştu.', '<b>Bilge Prizma:</b> “Aynalar yolunu çevirir, gayzerler seni uçurur. Işık nereden gelirse oraya döner, unutma.”'] },
+    { t: 'Yansımalar', p: ["Damla'nın rengi kristalden kristale sekip mağarayı aydınlattı.", '<b>Bilge Prizma:</b> “Solgun hakkında bir sır biliyorum: O da bir zamanlar renkliydi.”'] },
+    { t: 'Gökkuşağı mağarası', p: ['Mağara bin renkle parladı.', "<b>Bilge Prizma:</b> “Solgun zamanı durdurmak için Saat Kulesi'ne gitti. Acele et!”"] },
+  ] },
+  { who: 'tik', tag: "Saatçi Tik'in kulesi", beats: [
+    { t: 'Durmuş zaman', p: ['Kulenin bütün saatleri aynı anda durmuştu.', '<b>Saatçi Tik:</b> “Tik tak! Kadrana girince ibrenin gösterdiği yöne dönersin, ibre de bir çeyrek ilerler. Sırayı iyi düşün.”'] },
+    { t: 'Çanlar çalıyor', p: ['Damla boyadıkça çarklar yeniden döndü, çanlar çalmaya başladı.', '<b>Saatçi Tik:</b> “Zaman artık bizden yana!”'] },
+    { t: 'Zaman yeniden akıyor', p: ['Kulenin saati gece yarısını vurdu ve şehir renklendi.', '<b>Saatçi Tik:</b> “Solgun rüzgârla vadiye savruldu. Esinti seni bekliyor.”'] },
+  ] },
+  { who: 'esinti', tag: "Esinti'nin vadisi", beats: [
+    { t: 'Rüzgârsız vadi', p: ['Vadide yel değirmenleri durgun, uçurtmalar yerdeydi.', '<b>Esinti:</b> “Rüzgâr kapılarından yalnızca rüzgârla aynı yönde geçebilirsin. Ters yönden gelirsen duvar gibi durur.”'] },
+    { t: 'Uçurtmalar havada', p: ["Damla'nın renkleri rüzgâra karıştı, uçurtmalar yeniden yükseldi.", '<b>Esinti:</b> “Solgun\'u görüyorum! Renklerden kaçmıyor artık… Sanki onlara özeniyor.”'] },
+    { t: "Solgun'un gözyaşı", who: 'solgun', p: ['Son kare boyanınca vadi rengârenk oldu. Solgun, Damla\'nın önünde durdu.', '<b>Solgun:</b> “Ben de… bir zamanlar renkliydim.” Sisin içinden tek bir gri damla düştü.', 'Hikâye burada bitmiyor. Sisin ardında yeni bir dünya bekliyor.'] },
+  ] },
+];
+const STORY_TAG = ['Hikâye', 'Ara sahne', 'Final'];
+const storyKey = (w, k) => w + '-' + k;
+const storyOpen = (w, k) => k === 0 || (k === 1 ? save.best[WORLDS[w].from + 9] !== undefined : save.best[WORLDS[w].to] !== undefined);
+const storyNeed = (w, k) => k === 1 ? `${WORLDS[w].from + 10}. bölümü bitirince açılır.` : `${WORLDS[w].name} dünyasının son bölümünü bitirince açılır.`;
+// menüdeki nokta yalnız son ulaşılan dünyanın okunmamış sahneleri için (eski dünyaların hikâyesi haritada bekler)
+const storyNew = () => { const w = worldOf(unlockedUpTo()); return STORY[w] ? [0, 1, 2].filter(k => storyOpen(w, k) && !save.story[storyKey(w, k)]).length : 0; };
+function storyPin(w, k, x, y) {
+  const S = STORY[w], B = S.beats[k], open = storyOpen(w, k), read = save.story[storyKey(w, k)];
+  return `<button class="story-pin${k === 2 ? ' end' : ''}${open ? read ? '' : ' new' : ' locked'}" data-sw="${w}" data-sk="${k}" style="left:${x.toFixed(1)}%;top:${y}px"`
+    + ` aria-label="${STORY_TAG[k]}: ${open ? B.t : 'kilitli'}">${charSvg(B.who || S.who)}<span class="tag">${STORY_TAG[k]}</span></button>`;
+}
+function openStory(w, k) {
+  const S = STORY[w], B = S.beats[k], W = WORLDS[w];
+  if (!storyOpen(w, k)) { SFX.blocked(); toast(`${STORY_TAG[k]}: ${storyNeed(w, k)}`); return; }
+  const card = $('story').querySelector('.card');
+  card.style.setProperty('--wc', hsl(W.theme.hues[0], 56)); card.style.setProperty('--wc2', hsl(W.theme.hues[1 % W.theme.hues.length], 56));
+  $('storyArt').innerHTML = charSvg(B.who || S.who, 'who') + charSvg('damla', 'hero');
+  $('storyEyebrow').textContent = `${ROMAN[w]}. Bölüm · ${W.name} · ${STORY_TAG[k]}`;
+  $('storyTitle').textContent = B.t;
+  $('storyText').innerHTML = B.p.map(t => `<p>${t}</p>`).join('');
+  $('story').hidden = false;
+  if (!save.story[storyKey(w, k)]) { save.story[storyKey(w, k)] = 1; persist(); }
+  SFX.world(); $('bStoryOk').focus({ preventScroll: true });
+}
+$('bStoryOk').onclick = () => {
+  SFX.ui(); $('story').hidden = true; chestDot();
+  if (!$('menu').hidden) { const y = $('menu').scrollTop; openMenu(); $('menu').scrollTop = y; }
+};
+$('story').onclick = e => { if (e.target === $('story')) $('bStoryOk').click(); };
+function chapterHead(n, W, got, count, mc) {
+  const S = STORY[n];
+  return `<header class="ch-head">${S ? `<button class="ch-av" data-sw="${n}" data-sk="0" aria-label="${S.beats[0].t}">${charSvg(S.who)}</button>` : ''}`
+    + `<span class="ch-no">${ROMAN[n] || n + 1}. Bölüm</span><h3 class="ch-name">${W.name}</h3><p class="ch-sub">${S ? S.tag : W.feat}</p>`
+    + `<div class="ch-meta"><span>${masterOn ? CROWN + mc + '/' + count : STAR + got + '/' + count * 3}</span>`
+    + `<i class="bar"><i style="width:${((masterOn ? mc / count : got / (count * 3)) * 100).toFixed(1)}%"></i></i><span>${W.feat}</span></div></header>`;
+}
+
 // ---------- Harita sahnesi ----------
 // Her dünyanın bölgesine kendi arazisi (kenarlarda silüet), yolun dış tarafında temaya uygun süsler ve havada dolaşan
 // bir efekt eklenir. Yerleşim dünyaya göre tohumlu, her açılışta aynı. Süsler yolun dış kenarında, sandıklar iç tarafta;
@@ -3508,24 +3694,34 @@ function openMenu() {
     let got = 0;
     for (let i = W.from; i <= W.to; i++) got += starsOf(i);
     const sec = document.createElement('section');
-    sec.className = 'region'; sec.dataset.w = n + 1;
+    // her dünya bir bölüm: kesintisiz yolculuk, üstte karakter madalyonlu levha, yolda üç hikâye sahnesi
+    sec.className = 'region chapter'; sec.dataset.w = n + 1;
     sec.style.setProperty('--wc', hsl(W.theme.hues[0], 52));
+    sec.style.setProperty('--pc', n ? hsl(WORLDS[n - 1].theme.hues[0], 52) : 'var(--bg)');
     const mc = masterCount(n), sealed = masterOn && !worldDone(n);
     if (sealed) sec.classList.add('sealed');
-    sec.innerHTML = `<div class="world-head"><span class="badge${mc === count ? ' gold' : ''}">${mc === count ? CROWN : n + 1}</span>`
-      + `<div class="nm"><b>${W.name}</b><span class="feat">${W.feat}</span><div class="wbar"><i style="width:${((masterOn ? mc / count : got / (count * 3)) * 100).toFixed(1)}%"></i></div></div>`
-      + (masterOn ? `<span class="count">${CROWN}${mc}/${count}</span></div>` : `<span class="count">${STAR}${got}/${count * 3}</span></div>`)
+    sec.innerHTML = chapterHead(n, W, got, count, mc)
       + (sealed ? '<p class="seal-note">Bu dünyanın bütün bölümlerini bitirince usta zorluk açılır.</p>' : '');
     const pts = Array.from({ length: count }, (_, j) => mapPoint(j));
-    const H = pts[count - 1].y + MAP_PAD;
+    const last = pts[count - 1], fin = { x: 50, y: last.y + 96 }, H = fin.y + 70;
     const reachedHere = Math.min(open, W.to) - W.from; // bu dünyada yolun açılmış kısmı
+    const complete = save.best[W.to] !== undefined;
+    // yol yukarıdan (önceki bölümden, levhanın arkasından) gelir, finalden aşağı, bir sonraki bölüme akar
+    const route = [...(n ? [{ x: 50, y: -320 }] : []), ...pts, fin, { x: 50, y: H + 40 }];
+    const done = n || reachedHere > 0 ? [...(n ? [{ x: 50, y: -320 }] : []), ...pts.slice(0, reachedHere + 1), ...(complete ? [fin, { x: 50, y: H + 40 }] : [])] : null;
     const trail = document.createElement('div');
     trail.className = 'trail'; trail.style.height = H + 'px';
     trail.innerHTML = `<svg viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true">
-        <path class="road" d="${mapPath(pts)}"/><path class="road-dash" d="${mapPath(pts)}"/>
-        ${reachedHere > 0 ? `<path class="road-done" d="${mapPath(pts.slice(0, reachedHere + 1))}"/>` : ''}</svg>`;
+        <path class="road-shade" d="${mapPath(route)}"/><path class="road" d="${mapPath(route)}"/><path class="road-dash" d="${mapPath(route)}"/>
+        ${done && done.length > 1 ? `<path class="road-done" d="${mapPath(done)}"/>` : ''}</svg>`;
     trail.insertAdjacentHTML('afterbegin', mapScene(n, pts, reachedHere));
     trail.onclick = pokeProp;
+    if (!masterOn && STORY[n]) {
+      const a = pts[9], z = pts[10], mx = (a.x + z.x) / 2;
+      trail.insertAdjacentHTML('beforeend', storyPin(n, 0, pts[0].x > 50 ? pts[0].x - 30 : pts[0].x + 30, pts[0].y + 4)
+        + storyPin(n, 1, mx > 50 ? mx - 27 : mx + 27, (a.y + z.y) / 2) + storyPin(n, 2, fin.x, fin.y));
+    }
+    sec.addEventListener('click', e => { const p = e.target.closest('[data-sw]'); if (p) openStory(+p.dataset.sw, +p.dataset.sk); });
     for (let i = W.from; i <= W.to; i++) {
       const p = pts[i - W.from], b = document.createElement('button');
       b.className = 'node'; b.id = 'lv' + i;
@@ -3572,8 +3768,8 @@ function openMenu() {
   // haritanın sonu: bir sonraki dünya sisin içinde
   const teaser = document.createElement('section');
   teaser.className = 'region fog';
-  teaser.innerHTML = `<span class="fog-q">?</span><b>${reached + 1 < WORLDS.length ? `Dünya ${reached + 2}` : 'Yeni dünya'}</b>`
-    + `<p>${reached + 1 < WORLDS.length ? `${WORLDS[reached].name} dünyasını bitirince sis dağılır.` : 'Hazırlanıyor. Yakında burada.'}</p>`;
+  teaser.innerHTML = `<span class="fog-road" aria-hidden="true"></span><span class="fog-av">${charSvg('solgun')}</span><b>${reached + 1 < WORLDS.length ? `${ROMAN[reached + 1]}. Bölüm` : 'Yeni bölüm'}</b>`
+    + `<p>${reached + 1 < WORLDS.length ? `Solgun yolu kapatıyor. ${WORLDS[reached].name} dünyasını bitirince sis dağılır.` : 'Solgun\'un hikâyesi sürüyor. Yeni dünya hazırlanıyor.'}</p>`;
   box.appendChild(teaser);
   // en üstte günün bulmacası kartı
   const daily = document.createElement('button');
@@ -4858,7 +5054,7 @@ function chestsReady() {
   }
   return n;
 }
-const chestDot = () => { const on = chestsReady() > 0 || questsClaimable() > 0 || eventFresh(); $('bMenu').classList.toggle('has-chest', on); $('bLevels').classList.toggle('has-chest', on); };
+const chestDot = () => { const on = chestsReady() > 0 || questsClaimable() > 0 || eventFresh() || storyNew() > 0; $('bMenu').classList.toggle('has-chest', on); $('bLevels').classList.toggle('has-chest', on); };
 const chestSvg = open => `<svg class="box" viewBox="0 0 48 48" aria-hidden="true">
   <rect x="7" y="21" width="34" height="20" rx="3.5" fill="hsl(28 55% 38%)"/><rect x="7" y="21" width="34" height="5" fill="hsl(28 50% 30%)"/>
   <rect x="21.5" y="21" width="5" height="20" fill="hsl(42 90% 52%)"/>
