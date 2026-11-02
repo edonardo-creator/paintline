@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="ff096ada96e0204a">
+<meta name="paintline-version" content="046842d338987201">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -611,6 +611,25 @@
   .tour-card .q-head svg { width: 20px; height: 20px; fill: none; stroke: hsl(42 92% 50%); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .tour-note { margin: 0; font-size: .78rem; color: var(--muted); line-height: 1.45; }
 
+  /* Arkadaş meydan okuması */
+  .win-links { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .win-links .btn.share-link { padding: 0 12px; }
+  #duel { z-index: 57; } /* açılış ekranının üstünde açılır */
+  .duel-card { gap: 10px; }
+  .duel-av { display: block; width: 84px; height: 84px; margin: 0 auto; }
+  .duel-list .q-head b { display: flex; align-items: center; gap: 8px; }
+  .duel-list .q-head svg { width: 20px; height: 20px; fill: none; stroke: var(--lv); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .duel-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; min-height: 52px; padding: 6px 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--solid); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+  .duel-row .avatar { width: 40px; height: 40px; }
+  .duel-row .nm b, .duel-row .nm small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .duel-row .nm b { font-weight: 700; }
+  .duel-row .nm small { font-size: .72rem; color: var(--muted); font-weight: 600; }
+  .duel-row .st { display: flex; flex-direction: column; align-items: center; min-width: 36px; }
+  .duel-row .st b { font: 800 1rem var(--f-display); font-variant-numeric: tabular-nums; }
+  .duel-row .st small { font-size: .62rem; color: var(--muted); font-weight: 700; }
+  .duel-row.won { border-color: color-mix(in oklab, hsl(145 60% 42%) 65%, var(--line)); background: color-mix(in oklab, hsl(145 60% 42%) 10%, var(--solid)); }
+  .duel-row.won .st:first-of-type b { color: hsl(145 60% 36%); }
+
   /* Sıralama */
   /* üç sekme dar ekrana sığsın: büyük harf ve harf aralığı yok */
   .mode-switch.ach-tabs button { flex: 1 1 0; min-width: 0; text-transform: none; letter-spacing: 0; font-size: .86rem; padding-inline: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1075,7 +1094,10 @@
     <h2 id="winTitle">Bölüm tamam</h2>
     <div class="stats-row" id="winStats"></div>
     <p id="winText"></p>
-    <button class="btn share-link" id="bShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12v6.5A2 2 0 0 0 7 20.5h10a2 2 0 0 0 2-2V12"/></svg>Sonucu paylaş</button>
+    <div class="win-links">
+      <button class="btn share-link" id="bShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8"/><path d="M5 12v6.5A2 2 0 0 0 7 20.5h10a2 2 0 0 0 2-2V12"/></svg>Sonucu paylaş</button>
+      <button class="btn share-link" id="bDuel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M9.5 6.5 6 3H3v3l3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>Meydan oku</button>
+    </div>
     <div class="row">
       <button class="btn" id="bRetry">Tekrar oyna</button>
       <button class="btn primary" id="bNext">Sonraki bölüm</button>
@@ -1120,6 +1142,19 @@
     <h2 id="chestTitle">Sandık açıldı!</h2>
     <ul class="chest-loot" id="chestLoot"></ul>
     <button class="btn primary big" id="bChestOk">Harika</button>
+  </div>
+</div>
+
+<div class="sheet center" id="duel" hidden>
+  <div class="card duel-card" role="dialog" aria-modal="true" aria-labelledby="duelTitle">
+    <span class="duel-av" id="duelAv"></span>
+    <small class="tut-eyebrow">Meydan okuma</small>
+    <h2 id="duelTitle"></h2>
+    <p id="duelText"></p>
+    <div class="row">
+      <button class="btn" id="bDuelLater">Sonra</button>
+      <button class="btn primary" id="bDuelGo">Kabul et</button>
+    </div>
   </div>
 </div>
 
@@ -1491,7 +1526,7 @@ const demoCv = $('demo'), dctx = demoCv.getContext('2d');
 // hareketi azalt: sistem ayarı ya da oyundaki 'Azalt' seçimi (applyA11y günceller)
 const motionMQ = matchMedia('(prefers-reduced-motion: reduce)');
 let reduceMotion = motionMQ.matches;
-const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
+const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
 const hsl = ([h, s], l) => `hsl(${h} ${s}% ${l}%)`;
 
 // ---------- Kayıt ----------
@@ -1526,6 +1561,7 @@ if (save.haptics === undefined) save.haptics = true;
 if (!save.theme) save.theme = 'auto';
 // erişilebilirlik: desenli karolar, yazı boyu (0–2), yön düğmeleri (off/right/left), hareket (auto/reduce)
 save.a11y = Object.assign({ pattern: false, text: 0, dpad: 'off', motion: 'auto' }, save.a11y);
+if (!save.duels) save.duels = {}; // meydan okumalar: tahta özeti → { id, def, src, n, a, f, m, best, won, t }
 if (!save.tour) save.tour = {}; // haftalık turnuva: 'YYYY-Www' → { defs, best{k}, done, total, submitted, rewarded, rank }
 if (!save.events) save.events = {}; // sezon etkinlikleri: kimlik → { best{k}, stars{k}, rewarded }
 if (!save.master) save.master = {}; // usta zorlukta geçilen bölümler: sıra → zaman
@@ -1540,7 +1576,7 @@ function applyThemePref() {
   if (save.theme === 'auto') delete r.dataset.theme; else r.dataset.theme = save.theme;
 }
 applyThemePref();
-save.stats = Object.assign({ wins: 0, flawless: 0, dailies: 0, bestStreak: save.daily?.streak || 0, shares: 0, quests: 0, tourDone: 0, tourPodium: 0, tourWins: 0 }, save.stats);
+save.stats = Object.assign({ wins: 0, flawless: 0, dailies: 0, bestStreak: save.daily?.streak || 0, shares: 0, quests: 0, tourDone: 0, tourPodium: 0, tourWins: 0, duelsSent: 0, duelsWon: 0 }, save.stats);
 // istatistikler (2026-10-31): eski kayıtta hamle ve karo rekorlardan en az değer olarak başlar, süre ve günlük geçmiş 0'dan
 if (save.stats.moves === undefined) {
   let m = 0, t = 0; const ww = {};
@@ -1982,7 +2018,7 @@ function parseLevel(i, def = LEVELS[i]) {
   const portal = {};
   for (const [a, b] of Object.values(spots)) { portal[a] = b; portal[b] = a; }
   const world = def.world ?? worldOf(i);
-  return { i, w, h, wall, tile, portal, start, floorCount, par: def.par, hint: def.hint, hue: def.hue || levelHue(i), theme: WORLDS[world].theme, world };
+  return { i, w, h, wall, tile, portal, start, floorCount, par: def.par, hint: def.hint, hue: def.hue || levelHue(i), theme: WORLDS[world].theme, world, def };
 }
 const xy = (S, k) => ({ x: k % S.w, y: (k / S.w) | 0 });
 
@@ -2218,7 +2254,7 @@ function enterScene(hint, showHint) {
   // zamana karşıda hamle sınırı ve geri alma sınırı yok, ipucu kapalı
   // usta zorlukta sınır tam en kısa çözüm, geri alma ve ipucu yok
   L.limit = L.rush ? Infinity : L.master ? L.par : moveLimit(L.par); L.undoLeft = L.rush ? Infinity : L.master ? 0 : undoLimit(L.par);
-  $('bHint').hidden = !!(L.rush || L.master || L.tour !== undefined); $('lvl').classList.toggle('rush-on', !!L.rush);
+  $('bHint').hidden = !!(L.rush || L.master || L.tour !== undefined || L.duel); $('lvl').classList.toggle('rush-on', !!L.rush);
   if (!L.rush) $('lvl').classList.remove('rush-warn');
   $('win').hidden = true; $('fail').hidden = true;
   applyTheme(L.world);
@@ -2231,7 +2267,7 @@ function enterScene(hint, showHint) {
   updateHud(); resize(); kick();
   srSay(`${$('lvl').getAttribute('aria-label')}. ${L.floorCount} karo, hedef ${L.par} hamle${isFinite(L.limit) ? `, en fazla ${L.limit}` : ''}. ${save.a11y.dpad !== 'off' ? 'Yön düğmeleriyle' : 'Ok tuşlarıyla ya da kaydırarak'} oyna.`);
 }
-const restart = () => L.rush ? (rush && !rush.over && !L.won && startRushBoard(L.rushDef)) : L.tour !== undefined ? startTour(L.tour, L.tourWeek) : L.event !== undefined ? startEvent(L.event) : L.daily ? startDaily() : startLevel(L.i, true);
+const restart = () => L.rush ? (rush && !rush.over && !L.won && startRushBoard(L.rushDef)) : L.duel ? startDuel(L.duel.id) : L.tour !== undefined ? startTour(L.tour, L.tourWeek) : L.event !== undefined ? startEvent(L.event) : L.daily ? startDaily() : startLevel(L.i, true);
 // Her denemede hamle sınırı (en kısa çözüm + yarısı kadar pay, en az 3) ve en kısa çözümle orantılı
 // geri alma hakkı var (dörtte biri, en az 1).
 // Sınıra gelip tahta bitmemişse deneme kaybedilir; baştan başlamak iki hakkı da yeniler.
@@ -2289,7 +2325,7 @@ function finishLevel(now) {
   L.won = true; L.winT = now; L.hintDir = null;
   spawnParts(L, now);
   const s = runStars();
-  if (L.daily) { recordDaily(s); lbSubmitDaily(s); } else if (L.tour !== undefined) recordTour(); else if (L.event !== undefined) recordEvent(s); else recordBest(L.i, L.moves, L.hintUsed || L.powerUsed);
+  if (L.daily) { recordDaily(s); lbSubmitDaily(s); } else if (L.duel) recordDuel(); else if (L.tour !== undefined) recordTour(); else if (L.event !== undefined) recordEvent(s); else recordBest(L.i, L.moves, L.hintUsed || L.powerUsed);
   if (L.master) { L.masterNew = !save.master[L.i]; if (L.masterNew) save.master[L.i] = Date.now(); }
   save.stats.wins++; trackWin(L);
   L.questsDone = L.daily ? questEvent('daily') : questEvent('win', { stars: s, clean: !L.undoUsed && !L.hintUsed && !L.powerUsed,
@@ -2363,6 +2399,7 @@ const ACH_ICON = {
   flag: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',
   crown: '<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>',
   timer: '<circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.6 1.8M9.5 2.5h5M12 2.5V6"/>',
+  swords: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/><path d="M9.5 6.5 6 3H3v3l3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/>',
   trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M10 17h4"/>',
 };
 const TIER = { bronze: '#C9824A', silver: '#9AA3B8', gold: '#EFA017' };
@@ -2391,6 +2428,8 @@ const ACHS = [
   { id: 'tour5', icon: 'trophy', tier: 'bronze', name: 'Turnuva Gediklisi', desc: '5 haftalık turnuvayı tamamla.', val: st => st.tourDone, goal: 5 },
   { id: 'tourPod', icon: 'trophy', tier: 'silver', name: 'Kürsüde', desc: 'Bir haftalık turnuvada ilk üçe gir.', val: st => st.tourPodium, goal: 1 },
   { id: 'tourWin', icon: 'crown', tier: 'gold', name: 'Turnuva Şampiyonu', desc: 'Bir haftalık turnuvayı birinci bitir.', val: st => st.tourWins, goal: 1 },
+  { id: 'duel1', icon: 'swords', tier: 'bronze', name: 'Eldiven Atıldı', desc: 'Bir arkadaşına meydan oku.', val: st => st.duelsSent, goal: 1 },
+  { id: 'duel5', icon: 'swords', tier: 'silver', name: 'Düello Ustası', desc: '5 meydan okumayı daha az hamleyle kazan.', val: st => st.duelsWon, goal: 5 },
   { id: 'share1', icon: 'share', tier: 'bronze', name: 'Gösteriş', desc: 'Bir sonucunu paylaş ya da kaydet.', val: st => st.shares, goal: 1 },
   ...WORLDS.map((W, w) => ({
     id: 'world' + w, icon: 'flag', world: w, name: `${W.name} Fatihi`, desc: `${W.name} dünyasının bütün bölümlerini bitir.`,
@@ -2707,7 +2746,7 @@ async function makeShareCard(S, moves, stars) {
   lg.addColorStop(0, `hsl(${hh} ${hs}% 42%)`); lg.addColorStop(1, `hsl(${hh} ${hs}% 58%)`);
   c.fillStyle = lg; c.fillText('LINE', x0 + wA, 170);
   c.font = `700 30px ${BODY}`; c.fillStyle = muted; c.textAlign = 'center';
-  const sub = S.tour !== undefined ? `HAFTALIK TURNUVA · ${S.tour + 1}/5` : S.event !== undefined ? `${S.eventName.toLocaleUpperCase('tr')} · ${S.event + 1}` : S.daily ? `GÜNÜN BULMACASI · ${shortDate(S.daily).toLocaleUpperCase('tr')}` : `${WORLDS[S.world].name.toLocaleUpperCase('tr')} · BÖLÜM ${S.i + 1}`;
+  const sub = S.duel ? `MEYDAN OKUMA · ${S.duel.src.toLocaleUpperCase('tr')}` : S.tour !== undefined ? `HAFTALIK TURNUVA · ${S.tour + 1}/5` : S.event !== undefined ? `${S.eventName.toLocaleUpperCase('tr')} · ${S.event + 1}` : S.daily ? `GÜNÜN BULMACASI · ${shortDate(S.daily).toLocaleUpperCase('tr')}` : `${WORLDS[S.world].name.toLocaleUpperCase('tr')} · BÖLÜM ${S.i + 1}`;
   if (c.letterSpacing !== undefined) c.letterSpacing = '4px';
   c.fillText(sub, W / 2, 232);
   if (c.letterSpacing !== undefined) c.letterSpacing = '0px';
@@ -2769,13 +2808,15 @@ async function openShare() {
   const s = runStars(), moves = L.moves;
   const blob = await makeShareCard(L, moves, s);
   if (!blob) { toast('Görsel hazırlanamadı.'); return; }
-  const name = L.tour !== undefined ? `paintline-turnuva-${L.tourWeek}-${L.tour + 1}.png` : L.event !== undefined ? `paintline-${L.eventId}-${L.event + 1}.png` : L.daily ? `paintline-gunluk-${L.daily}.png` : `paintline-bolum-${L.i + 1}.png`;
+  const name = L.duel ? `paintline-meydan-okuma.png` : L.tour !== undefined ? `paintline-turnuva-${L.tourWeek}-${L.tour + 1}.png` : L.event !== undefined ? `paintline-${L.eventId}-${L.event + 1}.png` : L.daily ? `paintline-gunluk-${L.daily}.png` : `paintline-bolum-${L.i + 1}.png`;
   shareFile = new File([blob], name, { type: 'image/png' });
   if (shareUrl) URL.revokeObjectURL(shareUrl);
   shareUrl = URL.createObjectURL(blob);
   $('shareImg').src = shareUrl;
   const stars = '★'.repeat(s) + '☆'.repeat(3 - s);
-  $('shareSheet').dataset.text = L.tour !== undefined
+  $('shareSheet').dataset.text = L.duel
+    ? `Paintline meydan okuması (${L.duel.src}): ${moves} hamle ${stars}. ${L.duel.n} ${L.duel.m} hamlede çözmüştü.`
+    : L.tour !== undefined
     ? `Paintline haftalık turnuva ${L.tour + 1}/5: ${moves} hamle ${stars}. Sen kaç hamlede çözersin?`
     : L.event !== undefined
     ? `Paintline · ${L.eventName} ${L.event + 1}: ${moves} hamle ${stars}. Sen kaç hamlede çözersin?`
@@ -3008,7 +3049,10 @@ function updateMeter() {
 }
 function updateHud() {
   if (L.rush) rushHud(true);
-  else if (L.tour !== undefined) {
+  else if (L.duel) {
+    $('lvl').innerHTML = `<span class="wn">${escHtml(L.duel.n)}</span><b>${L.duel.m}</b>`;
+    $('lvl').setAttribute('aria-label', `Meydan okuma: ${L.duel.n} bu tahtayı ${L.duel.m} hamlede çözdü`);
+  } else if (L.tour !== undefined) {
     $('lvl').innerHTML = `<span class="wn">Turnuva</span><b>${L.tour + 1}/5</b>`;
     $('lvl').setAttribute('aria-label', `Haftalık turnuva, bölüm ${L.tour + 1} / 5`);
   } else if (L.event !== undefined) {
@@ -3040,6 +3084,7 @@ function updateHud() {
   if (!dpadRO) fitDpad();
 }
 function showWin(s) {
+  $('bDuel').hidden = !!L.duel;
   starRow($('winStars'), s);
   for (let j = 0; j < s; j++) SFX.star(j);
   const last = L.i === LEVELS.length - 1, best = L.daily ? save.daily.best : save.best[L.i];
@@ -3052,6 +3097,19 @@ function showWin(s) {
   $('winText').textContent = L.daily ? `${how} Yarın yeni bir bulmaca var.`
     : last ? 'Sıradaki dünya hazırlanıyor. Yakında burada olacak.' : how;
   const nextWorld = WORLDS.find(w => w.from === L.i + 1);
+  if (L.duel) {
+    const D = L.duel, mv = L.moves;
+    $('winTitle').textContent = mv < D.m ? 'Kazandın!' : mv === D.m ? 'Berabere' : 'Az kaldı';
+    $('winStats').innerHTML = `<span class="pill">Sen<b>${mv}</b></span><span class="pill">${escHtml(D.n)}<b>${D.m}</b></span><span class="pill">Hedef<b>${L.par}</b></span>`;
+    $('winText').textContent = mv < D.m ? `${D.n} ${D.m} hamlede çözmüştü, sen ${mv} hamlede çözdün. Cevabını gönder, sıra onda!`
+      : mv === D.m ? `İkiniz de ${mv} hamle. ${L.par < mv ? `Bu tahta ${L.par} hamlede de çözülebiliyor.` : 'Bundan azı mümkün değil!'}`
+      : `${D.n} ${D.m} hamlede çözmüştü, sen ${mv}. Tekrar dene ya da yine de cevap gönder.`;
+    $('bNext').textContent = 'Cevap gönder';
+    questNote();
+    $('win').hidden = false; $('bNext').focus({ preventScroll: true });
+    chestDot();
+    return;
+  }
   if (L.tour !== undefined) {
     const T = save.tour[L.tourWeek], n = Object.keys(T.best).length;
     $('winTitle').textContent = 'Turnuva';
@@ -3200,7 +3258,7 @@ function openMenu() {
   daily.className = 'world glass daily-card';
   daily.innerHTML = `<span class="badge sun">${SUN}</span><div><b>Günün bulmacası</b><p>${dailyStatus()}</p></div><span class="go">Oyna</span>`;
   daily.onclick = () => { SFX.start(); openDaily(); };
-  if (!masterOn) { box.prepend(daily); const qc = questCard(); daily.after(qc); let last = qc; const tc = tourCard(); if (tc) { qc.after(tc); last = tc; } const ev = eventRegion(); if (ev) last.after(ev); }
+  if (!masterOn) { box.prepend(daily); const qc = questCard(); daily.after(qc); let last = qc; const tc = tourCard(); if (tc) { qc.after(tc); last = tc; } const dc = duelCard(); if (dc) { last.after(dc); last = dc; } const ev = eventRegion(); if (ev) last.after(ev); }
   // zorluk anahtarı: bir dünya bitince usta açılır
   const sw = document.createElement('div');
   sw.className = 'mode-wrap';
@@ -3235,6 +3293,7 @@ $('bRetry').onclick = () => { SFX.reset(); restart(); };
 $('bFailRetry').onclick = () => { SFX.reset(); $('fail').hidden = true; restart(); };
 $('bFailUndo').onclick = () => { $('fail').hidden = true; undo(); };
 $('bNext').onclick = () => {
+  if (L.duel) { SFX.ui(); sendDuel(); return; }
   if (L.tour !== undefined) {
     if (L.tourNext !== undefined) { SFX.start(); startTour(L.tourNext, L.tourWeek); } else { SFX.ui(); $('win').hidden = true; openMenu(); }
     return;
@@ -3278,6 +3337,7 @@ $('setTheme').onclick = e => {
 $('bAchClose').onclick = () => { SFX.ui(); $('ach').hidden = true; };
 $('achPop').onclick = () => { SFX.ui(); openAch(); };
 $('bShare').onclick = openShare;
+$('bDuel').onclick = () => { SFX.ui(); sendDuel(); };
 $('bShareGo').onclick = shareGo;
 $('bShareSave').onclick = shareSave;
 $('bShareClose').onclick = () => { SFX.ui(); $('shareSheet').hidden = true; };
@@ -4891,7 +4951,7 @@ async function cloudBoot() {
   if (!cloudOn()) return;
   try { if (await finishOAuth()) return; } catch (e) { openAuth('pick'); authMsg('Giriş tamamlanamadı: ' + e.message, true); return; }
   if (auth) { reconcileSafe(); profileSyncSoon(); flushScores().then(tourRewards); }
-  else if (!save.welcomed) openAuth('welcome');
+  else if (!save.welcomed && !pendingDuel) openAuth('welcome'); // meydan okuma bağlantısıyla gelen önce oynar
 }
 
 // ---------- Sıralama ----------
@@ -5146,6 +5206,124 @@ function tourCard() {
   return card;
 }
 
+// ---------- Arkadaş meydan okuması ----------
+// Bitirilen bir tahta bağlantıyla gönderilir: adresin '#m=' kısmında tahta tanımı (ızgara, dünya, renk), gönderenin hamlesi,
+// adı, avatarı ve çerçevesi (base64url JSON). Sunucu yok; açan oyuncu aynı tahtayı oynar, daha az hamleyle geçmeye çalışır,
+// isterse kendi sonucuyla cevap bağlantısı gönderir. Hedef (par) açılışta çözücüyle yeniden hesaplanır; bozuk bağlantı reddedilir.
+// Kayıt save.duels[id] (id = tahtanın özeti), en yeni DUEL_MAX tutulur. İpucu ve güç kapalı, jeton ve bölüm rekoru yok.
+const DUEL_MAX = 20, SITE_URL = 'https://edonardo-creator.github.io/paintline/';
+const TILE_CHARS = new Set(LEVELS.flatMap(l => [...l.grid.join('')]));
+const b64enc = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));
+const duelId = def => 'd' + hashStr(def.grid.join('|') + '@' + def.world).toString(36);
+const SWORDS = '<svg viewBox="0 0 24 24" aria-hidden="true">' + ACH_ICON.swords + '</svg>';
+function duelSource() {
+  if (L.duel) return L.duel.src;
+  if (L.tour !== undefined) return `Turnuva ${L.tour + 1}/5`;
+  if (L.event !== undefined) return `${L.eventName} ${L.event + 1}`;
+  if (L.daily) return `Günün bulmacası · ${shortDate(L.daily)}`;
+  return `${WORLDS[L.world].name} · ${L.i + 1}. bölüm`;
+}
+function duelLink() {
+  const P = save.profile;
+  const data = { g: L.def.grid.join('|'), w: L.world, h: L.hue, m: L.moves, s: duelSource(), n: P.name || '', a: P.avatar,
+    f: FRAMES.find(f => f.id === P.frame)?.ok() ? P.frame : 'plain' };
+  // kendi adresinden gönderilir (GitHub, chatgpt.site, yerel); claude.ai önizlemesinde GitHub adresi
+  const own = /^https?:$/.test(location.protocol) && window.top === window && !/claude/.test(location.host);
+  return (own ? location.origin + location.pathname.replace(/index\.html$/, '') : SITE_URL) + '#m=' + b64enc(JSON.stringify(data));
+}
+async function sendDuel() {
+  const url = duelLink();
+  const text = L.duel ? `Paintline meydan okumana cevabım: ${duelSource()} tahtasını ${L.moves} hamlede çözdüm (sen ${L.duel.m}). Sıra sende!`
+    : `Paintline'da sana meydan okuyorum: ${duelSource()} tahtasını ${L.moves} hamlede çözdüm. Daha azında çözebilir misin?`;
+  try {
+    if (navigator.share) await navigator.share({ title: 'Paintline meydan okuması', text, url });
+    else { await navigator.clipboard.writeText(`${text} ${url}`); toast('Bağlantı kopyalandı. Arkadaşına gönder.'); }
+    save.stats.duelsSent++; persist();
+    if (checkAch().length) popAch(300);
+  } catch (e) { if (e.name !== 'AbortError') toast('Gönderilemedi. Yeniden dene.'); }
+}
+function parseDuel(str) {
+  try {
+    if (str.length > 3000) return null;
+    const o = JSON.parse(b64dec(str)), grid = String(o.g).split('|');
+    const count = ch => grid.join('').split(ch).length - 1;
+    if (grid.length < 3 || grid.length > 16 || grid.some(r => r.length !== grid[0].length || r.length < 3 || r.length > 16 || [...r].some(c => !TILE_CHARS.has(c)))) return null;
+    if (count('S') !== 1 || ![0, 2].includes(count('A')) || ![0, 2].includes(count('B'))) return null;
+    const world = Number(o.w);
+    if (!Number.isInteger(world) || world < 0 || world >= WORLDS.length) return null;
+    const hue = Array.isArray(o.h) && o.h.length === 2 && o.h.every(v => Number.isFinite(v) && v >= 0 && v <= 360) ? o.h : WORLDS[world].theme.hues[0];
+    const def = { grid, par: 0, world, hue };
+    const seq = solveScene(makeScene(null, 0, def), 2e6);
+    if (!seq || !seq.length) return null;
+    def.par = seq.length;
+    const clean = (v, n) => String(v ?? '').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, n);
+    return { id: duelId(def), def, m: Math.max(def.par, Math.min(999, Math.floor(Number(o.m)) || 0)),
+      n: clean(o.n, 12) || 'Bir arkadaşın', a: AVATARS.some(A => A.id === o.a) ? o.a : 'ball',
+      f: FRAMES.some(F => F.id === o.f) ? o.f : 'plain', src: clean(o.s, 40) || 'Paintline' };
+  } catch (e) { return null; }
+}
+// aynı tahtaya yeni bağlantı gelirse rakibin adı ve hamlesi güncellenir, oyuncunun en iyisi kalır
+function duelEntry(D) {
+  const E = save.duels[D.id] || (save.duels[D.id] = { id: D.id, def: D.def, best: null, won: false });
+  Object.assign(E, { src: D.src, n: D.n, a: D.a, f: D.f, m: D.m, t: Date.now() });
+  Object.keys(save.duels).sort((x, y) => save.duels[y].t - save.duels[x].t).slice(DUEL_MAX).forEach(k => delete save.duels[k]);
+  persist();
+  return E;
+}
+function startDuel(id) {
+  const E = save.duels[id]; if (!E) return;
+  rush = null;
+  L = makeScene(null, performance.now(), E.def);
+  L.duel = E;
+  enterScene('', false);
+  queueTutorial();
+}
+function recordDuel() {
+  const E = save.duels[L.duel.id]; if (!E) return;
+  if (E.best === null || L.moves < E.best) E.best = L.moves;
+  E.t = Date.now();
+  if (!E.won && E.best < E.m) { E.won = true; save.stats.duelsWon++; }
+}
+let pendingDuel = null;
+function openDuelLink() {
+  const hit = /^#m=([\w-]+)$/.exec(location.hash);
+  if (!hit) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  const D = parseDuel(hit[1]);
+  if (!D) { toast('Meydan okuma bağlantısı açılamadı.'); return; }
+  pendingDuel = D;
+  $('duelAv').innerHTML = avatarHtml({ avatar: D.a, frame: D.f, any: true });
+  $('duelTitle').textContent = `${D.n} sana meydan okuyor`;
+  $('duelText').textContent = `${D.src} tahtasını ${D.m} hamlede çözdü. Daha azında çözebilir misin?`;
+  $('duel').hidden = false;
+  $('bDuelGo').focus({ preventScroll: true });
+}
+$('bDuelGo').onclick = () => {
+  const E = duelEntry(pendingDuel); pendingDuel = null;
+  $('duel').hidden = true; $('menu').hidden = true;
+  if (!$('title').hidden) hideTitle();
+  SFX.start(); startDuel(E.id);
+};
+$('bDuelLater').onclick = () => {
+  duelEntry(pendingDuel); pendingDuel = null;
+  $('duel').hidden = true; SFX.ui();
+  toast('Meydan okuma haritada seni bekliyor.');
+};
+function duelCard() {
+  const all = Object.values(save.duels).sort((a, b) => b.t - a.t);
+  if (!all.length) return null;
+  const card = document.createElement('section');
+  card.className = 'quests glass duel-list';
+  card.innerHTML = `<div class="q-head"><b>${SWORDS}Meydan okumalar</b><small>${all.filter(E => E.won).length}/${all.length} kazanıldı</small></div>`
+    + all.slice(0, 3).map(E => `<button class="duel-row${E.won ? ' won' : ''}" data-id="${E.id}" aria-label="${escHtml(E.n)}, ${escHtml(E.src)}: rakip ${E.m} hamle${E.best === null ? ', henüz oynamadın' : `, sen ${E.best}`}">`
+      + `${avatarHtml({ avatar: E.a, frame: E.f, any: true })}<span class="nm"><b>${escHtml(E.n)}</b><small>${escHtml(E.src)}</small></span>`
+      + `<span class="st"><b>${E.best ?? '–'}</b><small>sen</small></span><span class="st"><b>${E.m}</b><small>rakip</small></span></button>`).join('')
+    + '<p class="tour-note">Bir bölümü bitirince "Meydan oku" ile arkadaşına gönder; o da seni geçmeye çalışsın.</p>';
+  card.querySelectorAll('[data-id]').forEach(b => b.onclick = () => { $('menu').hidden = true; SFX.start(); startDuel(b.dataset.id); });
+  return card;
+}
+
 // ---------- Başlat ----------
 soundIcon();
 checkAch(true); // önceki ilerlemeden gelen başarımlar bildirimsiz açılır
@@ -5156,6 +5334,7 @@ function boot(data) {
 }
 window.claude?.hot?.snapshot?.(() => ({ level: L ? L.i : 0 }));
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+openDuelLink();
 cloudBoot();
 </script>
 
