@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="046842d338987201">
+<meta name="paintline-version" content="4633107410055de2">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -614,6 +614,23 @@
   /* Arkadaş meydan okuması */
   .win-links { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
   .win-links .btn.share-link { padding: 0 12px; }
+  /* Günlük giriş ödülü */
+  #login { z-index: 57; }
+  .login-card { gap: 12px; }
+  .login-days { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .login-days li { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 74px; padding: 6px 2px; border-radius: 16px; border: 1px solid var(--line); background: color-mix(in oklab, var(--ink) 4%, var(--solid)); }
+  .login-days li small { font-size: .66rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .login-days li b { font: 800 .95rem var(--f-display); font-variant-numeric: tabular-nums; }
+  .login-days li .ic { width: 26px; height: 26px; display: grid; place-items: center; color: hsl(42 92% 46%); font: 800 1.05rem var(--f-display); }
+  .login-days li .ic svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .login-days li.box { grid-column: span 2; }
+  .login-days li.box .ic, .login-days li.box .ic svg { width: 40px; height: 40px; }
+  .login-days li.got { opacity: .55; }
+  .login-days li.got::after { content: '✓'; position: absolute; top: 4px; right: 7px; font-weight: 800; font-size: .8rem; color: hsl(145 60% 38%); }
+  .login-days li.today { opacity: 1; border-color: hsl(42 92% 50%); background: color-mix(in oklab, hsl(45 100% 60%) 18%, var(--solid)); box-shadow: 0 0 0 3px color-mix(in oklab, hsl(45 100% 60%) 35%, transparent); }
+  .login-days li.today:not(.got) { animation: loginPulse 1.6s ease-in-out infinite; }
+  @keyframes loginPulse { 50% { transform: scale(1.05); } }
+  :root[data-motion="reduce"] .login-days li.today { animation: none; }
   #duel { z-index: 57; } /* açılış ekranının üstünde açılır */
   .duel-card { gap: 10px; }
   .duel-av { display: block; width: 84px; height: 84px; margin: 0 auto; }
@@ -1145,6 +1162,17 @@
   </div>
 </div>
 
+<div class="sheet center" id="login" hidden>
+  <div class="card login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <small class="tut-eyebrow">Günlük ödül</small>
+    <h2 id="loginTitle"></h2>
+    <p id="loginText"></p>
+    <ol class="login-days" id="loginDays"></ol>
+    <ul class="chest-loot" id="loginLoot" hidden></ul>
+    <button class="btn primary big" id="bLoginGo">Al</button>
+  </div>
+</div>
+
 <div class="sheet center" id="duel" hidden>
   <div class="card duel-card" role="dialog" aria-modal="true" aria-labelledby="duelTitle">
     <span class="duel-av" id="duelAv"></span>
@@ -1526,7 +1554,7 @@ const demoCv = $('demo'), dctx = demoCv.getContext('2d');
 // hareketi azalt: sistem ayarı ya da oyundaki 'Azalt' seçimi (applyA11y günceller)
 const motionMQ = matchMedia('(prefers-reduced-motion: reduce)');
 let reduceMotion = motionMQ.matches;
-const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
+const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('login').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
 const hsl = ([h, s], l) => `hsl(${h} ${s}% ${l}%)`;
 
 // ---------- Kayıt ----------
@@ -1561,6 +1589,7 @@ if (save.haptics === undefined) save.haptics = true;
 if (!save.theme) save.theme = 'auto';
 // erişilebilirlik: desenli karolar, yazı boyu (0–2), yön düğmeleri (off/right/left), hareket (auto/reduce)
 save.a11y = Object.assign({ pattern: false, text: 0, dpad: 'off', motion: 'auto' }, save.a11y);
+if (!save.login) save.login = { n: 0, last: null, total: 0 }; // günlük giriş ödülü: bu turda alınan gün, son alınan tarih, toplam
 if (!save.duels) save.duels = {}; // meydan okumalar: tahta özeti → { id, def, src, n, a, f, m, best, won, t }
 if (!save.tour) save.tour = {}; // haftalık turnuva: 'YYYY-Www' → { defs, best{k}, done, total, submitted, rewarded, rank }
 if (!save.events) save.events = {}; // sezon etkinlikleri: kimlik → { best{k}, stars{k}, rewarded }
@@ -2428,6 +2457,7 @@ const ACHS = [
   { id: 'tour5', icon: 'trophy', tier: 'bronze', name: 'Turnuva Gediklisi', desc: '5 haftalık turnuvayı tamamla.', val: st => st.tourDone, goal: 5 },
   { id: 'tourPod', icon: 'trophy', tier: 'silver', name: 'Kürsüde', desc: 'Bir haftalık turnuvada ilk üçe gir.', val: st => st.tourPodium, goal: 1 },
   { id: 'tourWin', icon: 'crown', tier: 'gold', name: 'Turnuva Şampiyonu', desc: 'Bir haftalık turnuvayı birinci bitir.', val: st => st.tourWins, goal: 1 },
+  { id: 'login30', icon: 'calendar', tier: 'silver', name: 'Sadık Oyuncu', desc: '30 günlük giriş ödülü al.', val: st => st.logins, goal: 30 },
   { id: 'duel1', icon: 'swords', tier: 'bronze', name: 'Eldiven Atıldı', desc: 'Bir arkadaşına meydan oku.', val: st => st.duelsSent, goal: 1 },
   { id: 'duel5', icon: 'swords', tier: 'silver', name: 'Düello Ustası', desc: '5 meydan okumayı daha az hamleyle kazan.', val: st => st.duelsWon, goal: 5 },
   { id: 'share1', icon: 'share', tier: 'bronze', name: 'Gösteriş', desc: 'Bir sonucunu paylaş ya da kaydet.', val: st => st.shares, goal: 1 },
@@ -2438,7 +2468,7 @@ const ACHS = [
   { id: 'gold1', icon: 'crown', tier: 'gold', name: 'Altın Dünya', desc: 'Bir dünyanın bütün bölümlerinde 3 yıldız al.', val: st => st.bestPerfect, goal: 1 },
 ];
 function achStats() {
-  const st = { done: 0, three: 0, stars: 0, noHint: 0, ...save.stats, streak: save.stats.bestStreak, worldDone: [], bestPerfect: 0, rushBest: save.rush.best,
+  const st = { done: 0, three: 0, stars: 0, noHint: 0, ...save.stats, logins: save.login.total, streak: save.stats.bestStreak, worldDone: [], bestPerfect: 0, rushBest: save.rush.best,
     events: Object.values(save.events).filter(p => p.rewarded).length,
     masterDone: Object.keys(save.master).length, masterWorlds: WORLDS.filter((W, w) => masterCount(w) === W.to - W.from + 1).length };
   for (let i = 0; i < LEVELS.length; i++) if (save.best[i] !== undefined) {
@@ -4272,6 +4302,7 @@ function showTitle() {
   D = null;
   if (!demoRaf) demoRaf = requestAnimationFrame(demoFrame);
   $('bPlay').focus({ preventScroll: true });
+  setTimeout(maybeLogin, 500);
 }
 function hideTitle() { $('title').hidden = true; }
 new ResizeObserver(() => { if (D) { demoGeo = fitGeo(demoCv, D); if (reduceMotion) draw(dctx, demoGeo, D, performance.now()); } }).observe(demoCv);
@@ -4503,6 +4534,61 @@ function openChest(w, k) {
   chestDot();
 }
 $('bChestOk').onclick = () => { SFX.ui(); $('chest').hidden = true; if (!$('menu').hidden) { const y = $('menu').scrollTop; openMenu(); $('menu').scrollTop = y; } };
+
+// ---------- Günlük giriş ödülü ----------
+// Her gün ilk açılışta (en az bir bölüm bitirmiş oyuncuya) 7 günlük takvimden sıradaki ödül. Gün kaçırılırsa takvim
+// sıfırlanmaz, kaldığı yerden devam eder; 7. gün sandık, sonra takvim baştan. Ödül modülünden verilir (grantReward):
+// jeton ve oyuncunun ulaştığı dünyanın gücü. Kayıt save.login { n: bu turda alınan gün 0–6, last: tarih, total }.
+const LOGIN = [{ coins: 1 }, { coins: 1 }, { coins: 2 }, { power: 1 }, { coins: 2 }, { coins: 3 }, { coins: 5, power: 1, box: true }];
+const BOLT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>';
+const loginReady = () => save.login.last !== dayKey() && Object.keys(save.best).length > 0 && !!window.grantReward;
+function maybeLogin() {
+  if (!loginReady() || $('title').hidden) return;
+  // başka bir pencere açıksa (giriş, meydan okuma, öğretici, ayarlar…) bekler; açılış ekranına dönünce yeniden denenir
+  if (document.querySelector('.sheet:not([hidden])') || !$('settings').hidden || !$('tutorial').hidden || !$('ach').hidden || !$('menu').hidden
+    || (document.getElementById('rewardShop') && !$('rewardShop').hidden)) return;
+  openLogin();
+}
+function loginDays(today, got) {
+  $('loginDays').innerHTML = LOGIN.map((R, k) => {
+    const cls = [R.box && 'box', k < today || (k === today && got) ? 'got' : '', k === today && 'today'].filter(Boolean).join(' ');
+    const what = R.box ? `${R.coins} jeton ve güç` : R.power ? `${R.power} güç` : `${R.coins} jeton`;
+    return `<li class="${cls}" aria-label="${k + 1}. gün: ${what}${k < today || (k === today && got) ? ', alındı' : k === today ? ', bugün' : ''}">`
+      + `<small>${k + 1}. gün</small><span class="ic">${R.box ? chestSvg(false) : R.power ? BOLT : '◈'}</span>`
+      + `<b>${R.box ? `+${R.coins}` : R.power ? `×${R.power}` : `+${R.coins}`}</b></li>`;
+  }).join('');
+}
+function openLogin() {
+  const k = save.login.n % LOGIN.length;
+  $('loginTitle').textContent = k === LOGIN.length - 1 ? 'Sandık günü!' : `${k + 1}. gün`;
+  $('loginText').textContent = k === LOGIN.length - 1 ? 'Haftalık sandığın hazır.' : 'Her gün gel, ödüller büyüsün. Bir gün kaçırırsan kaldığın yerden devam eder.';
+  loginDays(k, false);
+  $('loginLoot').hidden = true; $('loginDays').hidden = false;
+  $('bLoginGo').textContent = 'Al'; $('bLoginGo').dataset.done = '';
+  $('login').hidden = false;
+  $('bLoginGo').focus({ preventScroll: true });
+}
+function claimLogin() {
+  if (!loginReady()) return [];
+  const k = save.login.n % LOGIN.length, R = LOGIN[k], w = worldOf(unlockedUpTo());
+  save.login.n = (k + 1) % LOGIN.length; save.login.last = dayKey(); save.login.total++;
+  const got = window.grantReward({ w, coins: R.coins || 0, power: R.power || 0 });
+  persist();
+  return got.map(g => ({ ...g, w }));
+}
+$('bLoginGo').onclick = () => {
+  if ($('bLoginGo').dataset.done) { SFX.ui(); $('login').hidden = true; if (checkAch().length) popAch(300); return; }
+  const k = save.login.n % LOGIN.length, got = claimLogin();
+  loginDays(k, true);
+  $('loginLoot').innerHTML = got.map(g => g.kind === 'coins'
+    ? `<li><i>◈</i><span><b>+${g.n} jeton</b><small>Dünya hazinelerinde harca</small></span></li>`
+    : `<li><i style="--c:${hsl(WORLDS[g.w].theme.hues[0], 48)}">×${g.n}</i><span><b>${escHtml(g.name)}</b><small>Tek kullanımlık güç · ${WORLDS[g.w].name}</small></span></li>`).join('');
+  $('loginLoot').hidden = false;
+  $('loginText').textContent = save.login.n === 0 ? 'Takvim tamam! Yarın yeni hafta başlıyor.' : 'Yarın yine gel.';
+  $('bLoginGo').textContent = 'Harika'; $('bLoginGo').dataset.done = '1';
+  (LOGIN[k].box ? SFX.world : SFX.ach)(); buzz([15, 30, 15]);
+};
+addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(maybeLogin, 600); });
 
 // ---------- Zamana karşı ----------
 // 60 saniyede art arda kısa, üretilmiş tahtalar. Çözülen her tahta süre ekler; hedef hamlede bitirilen iki katı.
