@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="1ee19ad7ef8b4fc1">
+<meta name="paintline-version" content="0814082c1a9d9c6e">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -539,9 +539,6 @@
   .story-pin.new::after { content: '!'; position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; border-radius: 50%; background: hsl(28 95% 55%); color: #fff; font: 800 .74rem/20px var(--f-display); text-align: center; box-shadow: 0 0 0 2px var(--solid); }
   @keyframes pinGlow { 50% { box-shadow: 0 0 0 3px var(--solid), 0 0 0 5px var(--wc), 0 0 0 16px color-mix(in oklab, var(--wc) 0%, transparent), 0 12px 22px -10px rgba(0, 0, 0, .55); } }
   :root[data-motion="reduce"] .story-pin.new { animation: none; }
-  .region.fog .fog-av { width: 92px; height: 92px; display: block; margin-bottom: 4px; animation: storyBob 3.4s ease-in-out infinite alternate; }
-  .region.fog .fog-av svg { width: 100%; height: 100%; }
-  .region.fog .fog-road { position: absolute; left: 50%; top: 0; width: 22px; height: 64px; margin-left: -11px; border-radius: 0 0 11px 11px; background: linear-gradient(color-mix(in oklab, var(--ink) 10%, transparent), transparent); }
   #story { z-index: 57; }
   .story-card { gap: 10px; text-align: left; align-items: stretch; }
   .story-card h2 { text-align: left; }
@@ -558,25 +555,29 @@
   .story-text p:nth-child(2) { animation-delay: .25s; } .story-text p:nth-child(3) { animation-delay: .5s; } .story-text p:nth-child(4) { animation-delay: .75s; }
   .story-text p b { color: color-mix(in oklab, var(--wc), var(--ink) 35%); }
   :root[data-motion="reduce"] .story-text p { opacity: 1; animation: none; }
-  /* sis: bir sonraki dünya */
+  /* haritanın sonu: yol sisin içine girip kaybolur. Kaç bölüm ya da dünya kaldığı hiçbir yerde söylenmez. */
   .region.fog {
-    --wc: var(--muted); min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 4px;
-    border-style: dashed;
-    background:
-      radial-gradient(40% 50% at 25% 40%, color-mix(in oklab, var(--solid) 90%, transparent), transparent 70%),
-      radial-gradient(45% 55% at 75% 60%, color-mix(in oklab, var(--solid) 85%, transparent), transparent 70%),
-      linear-gradient(180deg, color-mix(in oklab, var(--ink) 8%, var(--solid)), color-mix(in oklab, var(--ink) 3%, var(--solid)));
+    --wc: var(--muted); --fog: color-mix(in oklab, var(--muted) 42%, var(--solid));
+    min-height: 380px; padding: 0 22px 44px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; text-align: center; gap: 6px;
+    background: linear-gradient(180deg, color-mix(in oklab, var(--pc) 14%, var(--bg)), color-mix(in oklab, var(--fog) 70%, var(--bg)) 150px, var(--fog));
   }
-  .region.fog::before {
-    content: ''; position: absolute; inset: -20%; pointer-events: none; opacity: .5;
-    background: radial-gradient(30% 25% at 30% 30%, var(--solid), transparent), radial-gradient(35% 30% at 70% 70%, var(--solid), transparent);
-    animation: fogDrift 9s ease-in-out infinite alternate;
-  }
-  @keyframes fogDrift { to { transform: translateX(8%); } }
-  .fog-q { font: 800 2.4rem var(--f-display); color: var(--muted); line-height: 1; }
-  .region.fog b { font: 800 .95rem var(--f-display); text-transform: uppercase; letter-spacing: .06em; }
-  .region.fog p { margin: 0; color: var(--muted); font-size: .85rem; }
-  .region.fog > * { position: relative; }
+  .region.fog > * { position: relative; z-index: 2; }
+  .region.fog .fog-far, .region.fog .fog-road, .region.fog .fog-cloud { position: absolute; z-index: 0; pointer-events: none; }
+  .region.fog .fog-far { left: 0; right: 0; top: 70px; width: 100%; height: 130px; opacity: .16; }
+  .region.fog .fog-road { left: 0; top: 0; width: 100%; height: 300px; -webkit-mask-image: linear-gradient(#000 25%, transparent 92%); mask-image: linear-gradient(#000 25%, transparent 92%); }
+  .region.fog .fog-road path { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .region.fog .fog-cloud { z-index: 1; left: var(--x); top: var(--y); width: var(--s); height: calc(var(--s) * .62); margin-left: calc(var(--s) / -2); border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--solid) 94%, transparent), color-mix(in oklab, var(--solid) 55%, transparent) 55%, transparent);
+    animation: fogDrift var(--d) ease-in-out infinite alternate; animation-delay: var(--dl); }
+  @keyframes fogDrift { from { transform: translateX(-18px); } to { transform: translateX(22px); } }
+  .region.fog .fog-av { width: 96px; height: 96px; display: block; margin-bottom: 2px; animation: storyBob 3.4s ease-in-out infinite alternate; filter: drop-shadow(0 10px 18px rgba(20, 24, 40, .25)); }
+  .region.fog .fog-av svg { width: 100%; height: 100%; }
+  .region.fog b { font: 800 1.15rem var(--f-display); letter-spacing: .02em; }
+  .region.fog .fog-eyebrow { font: 800 .64rem var(--f-body); letter-spacing: .24em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+  .region.fog .fog-eyebrow::before, .region.fog .fog-eyebrow::after { content: ''; width: 24px; height: 1px; background: currentColor; opacity: .5; }
+  .region.fog p { margin: 0; max-width: 280px; color: var(--muted); font-size: .88rem; line-height: 1.5; text-wrap: balance; }
+  :root[data-motion="reduce"] .region.fog .fog-cloud, :root[data-motion="reduce"] .region.fog .fog-av { animation: none; }
+  @media (prefers-reduced-motion: reduce) { .region.fog .fog-cloud, .region.fog .fog-av { animation: none; } }
 
   /* ipucu ve günün bulmacası */
   .toast {
@@ -2892,8 +2893,7 @@ function openAch() {
   const st = achStats(), list = visibleAchs(), n = list.filter(a => save.ach[a.id]).length;
   $('achTotal').innerHTML = `<b>${n}</b> / ${list.length} başarım`;
   const fmt = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long' });
-  const fog = list.length < ACHS.length
-    ? `<div class="badge-card locked fogged">${medal({ icon: 'flag', tier: 'silver' })}<b>Sisin ardında</b><p>Yeni dünyalar, yeni başarımlar getirir.</p></div>` : '';
+  const fog = `<div class="badge-card locked fogged">${medal({ icon: 'flag', tier: 'silver' })}<b>Sisin ardında</b><p>Yeni dünyalar, yeni başarımlar getirir.</p></div>`;
   $('achGrid').innerHTML = `<div class="ach-sum" style="grid-column:1/-1"><span class="bar"><i style="width:${(n / list.length * 100).toFixed(1)}%"></i></span></div>`
     + (save.rush.top.length ? `<div class="rush-panel"><h3>Zamana karşı · en iyi 10</h3><ol class="rush-top">${rushTable(10)}</ol></div>` : '')
     + list.map(a => {
@@ -3590,7 +3590,7 @@ function showWin(s) {
   const how = L.powerUsed ? 'Güçle çözüldü, en fazla 2 yıldız. Üç yıldız için güçsüz yeniden dene.' : L.hintUsed ? 'İpucuyla çözüldü, en fazla 2 yıldız. İpucusuz dene, 3 yıldızı kap.'
     : s === 3 ? 'En kısa çözümü buldun.' : `Bu bulmaca ${L.par} hamlede de çözülebiliyor.`;
   $('winText').textContent = L.daily ? `${how} Yarın yeni bir bulmaca var.`
-    : last ? 'Sıradaki dünya hazırlanıyor. Yakında burada olacak.' : how;
+    : last ? `${how} Sis henüz dağılmadı; yolun devamı Solgun'un ardında.` : how;
   const nextWorld = WORLDS.find(w => w.from === L.i + 1);
   if (L.duel) {
     const D = L.duel, mv = L.moves;
@@ -3965,8 +3965,16 @@ function openMenu() {
   // haritanın sonu: bir sonraki dünya sisin içinde
   const teaser = document.createElement('section');
   teaser.className = 'region fog';
-  teaser.innerHTML = `<span class="fog-road" aria-hidden="true"></span><span class="fog-av">${charSvg('solgun')}</span><b>${reached + 1 < WORLDS.length ? `${ROMAN[reached + 1]}. Bölüm` : 'Yeni bölüm'}</b>`
-    + `<p>${reached + 1 < WORLDS.length ? `Solgun yolu kapatıyor. ${WORLDS[reached].name} dünyasını bitirince sis dağılır.` : 'Solgun\'un hikâyesi sürüyor. Yeni dünya hazırlanıyor.'}</p>`;
+  // yol sisin içinde kaybolur; uzakta belli belirsiz bir manzara, önde sürüklenen sis bulutları ve Solgun.
+  // Metin hiçbir zaman kaç bölüm kaldığını ya da oyunun bittiğini söylemez.
+  teaser.style.setProperty('--pc', hsl(WORLDS[reached].theme.hues[0], 52));
+  const frnd = mulberry32(hashStr('sis' + reached));
+  const clouds = Array.from({ length: 9 }, (_, k) => `<i class="fog-cloud" style="--x:${(k % 3) * 38 + 12 + frnd() * 10}%;--y:${30 + Math.floor(k / 3) * 70 + frnd() * 30}px;--s:${190 + frnd() * 120}px;--d:${7 + frnd() * 6}s;--dl:${-frnd() * 8}s"></i>`).join('');
+  teaser.innerHTML = `<svg class="fog-far" viewBox="0 0 200 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100V62l22-20 18 14 26-34 20 22 14-10 24 30 18-24 22 18 20-12 16 14v40z" style="fill:var(--ink)"/><path d="M118 22v-8h4v8l3 4h-10z" style="fill:var(--ink)"/></svg>`
+    + `<svg class="fog-road" viewBox="0 0 100 300" preserveAspectRatio="none" aria-hidden="true"><path d="M50 0C50 70 40 110 46 160S58 250 52 300" style="stroke:color-mix(in oklab, var(--ink) 12%, transparent)" stroke-width="22"/><path d="M50 0C50 70 40 110 46 160S58 250 52 300" style="stroke:color-mix(in oklab, var(--ink) 30%, transparent)" stroke-width="2.5" stroke-dasharray="2 12"/></svg>`
+    + clouds
+    + `<span class="fog-av" aria-hidden="true">${charSvg('solgun')}</span><span class="fog-eyebrow">Sisin ardı</span><b>Solgun yolu kapatıyor</b>`
+    + `<p>${save.best[WORLDS[reached].to] === undefined ? `${WORLDS[reached].name} dünyasını bitir, sis biraz daha dağılsın.` : 'Sis henüz dağılmadı. Yolun nereye çıktığını Solgun\'dan başka kimse bilmiyor.'}</p>`;
   box.appendChild(teaser);
   // en üstte günün bulmacası kartı
   const daily = document.createElement('button');
