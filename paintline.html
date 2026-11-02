@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="4633107410055de2">
+<meta name="paintline-version" content="ef897a5d33c660d8">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -614,6 +614,25 @@
   /* Arkadaş meydan okuması */
   .win-links { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
   .win-links .btn.share-link { padding: 0 12px; }
+  /* Top ve iz koleksiyonu */
+  #closet { z-index: 58; }
+  .btn.closet-open { width: 100%; min-height: 48px; }
+  .closet-card { gap: 10px; max-height: calc(100dvh - 24px); overflow-y: auto; }
+  .closet-head { width: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; text-align: left; }
+  .closet-head h2 { margin: 2px 0 0; }
+  .closet-bal { font: 800 1rem var(--f-display); color: hsl(42 92% 44%); white-space: nowrap; padding: 6px 12px; border-radius: 999px; background: color-mix(in oklab, hsl(45 100% 60%) 18%, var(--solid)); }
+  .closet-cv { width: 100%; height: 72px; display: block; border-radius: 18px; background: var(--tray); }
+  .closet-grid { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .closet-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px 9px; min-height: 44px; border-radius: 16px; border: 1px solid var(--line); background: var(--solid); color: var(--ink); font: inherit; cursor: pointer; }
+  .closet-item canvas { width: 64px; height: 44px; display: block; }
+  .closet-item b { font-weight: 700; font-size: .84rem; }
+  .closet-item small { font-size: .7rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .closet-item.on { border-color: var(--lv); box-shadow: 0 0 0 2px var(--lv); }
+  .closet-item.on small { color: var(--lv-strong); }
+  .closet-item.ask { border-color: hsl(42 92% 50%); background: color-mix(in oklab, hsl(45 100% 60%) 16%, var(--solid)); }
+  .closet-item.ask small { color: hsl(36 90% 38%); }
+  .closet-item.poor small { color: var(--muted); }
+
   /* Günlük giriş ödülü */
   #login { z-index: 57; }
   .login-card { gap: 12px; }
@@ -1359,6 +1378,19 @@
   </div>
 </div>
 
+<div class="sheet center" id="closet" hidden>
+  <div class="card closet-card" role="dialog" aria-modal="true" aria-labelledby="closetTitle">
+    <div class="closet-head"><div><small class="tut-eyebrow">Koleksiyon</small><h2 id="closetTitle">Top ve iz</h2></div><span class="closet-bal" id="closetBal"></span></div>
+    <canvas class="closet-cv" id="closetCv" aria-hidden="true"></canvas>
+    <h3 class="prof-sec">Toplar</h3>
+    <div class="closet-grid" id="closetBalls"></div>
+    <h3 class="prof-sec">İzler</h3>
+    <div class="closet-grid" id="closetTrails"></div>
+    <p class="prof-hint" id="closetHint" role="status" aria-live="polite"></p>
+    <button class="btn primary big" id="bClosetOk">Tamam</button>
+  </div>
+</div>
+
 <div class="sheet center" id="login" hidden>
   <div class="card login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
     <small class="tut-eyebrow">Günlük ödül</small>
@@ -1392,6 +1424,7 @@
     <h3 class="prof-sec">Çerçeve <small>başarımlarla açılır</small></h3>
     <div class="prof-grid" id="profFrames"></div>
     <p class="prof-hint" id="profHint" role="status" aria-live="polite"></p>
+    <button class="btn closet-open" id="bCloset"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15" cy="12" r="5"/><path d="M3 9h4M2 13h5M4 17h4"/></svg>Top ve iz koleksiyonu</button>
     <button class="btn primary big" id="bProfOk">Tamam</button>
   </div>
 </div>
@@ -1751,7 +1784,7 @@ const demoCv = $('demo'), dctx = demoCv.getContext('2d');
 // hareketi azalt: sistem ayarı ya da oyundaki 'Azalt' seçimi (applyA11y günceller)
 const motionMQ = matchMedia('(prefers-reduced-motion: reduce)');
 let reduceMotion = motionMQ.matches;
-const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('login').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
+const overlayOpen = () => (document.getElementById('auth') && (!$('auth').hidden || !$('cloudPick').hidden)) || (document.getElementById('rewardShop') && !$('rewardShop').hidden) || !$('menu').hidden || !$('worldCard').hidden || !$('title').hidden || !$('win').hidden || !$('fail').hidden || !$('tutorial').hidden || !$('rushEnd').hidden || !$('chest').hidden || !$('profile').hidden || !$('duel').hidden || !$('login').hidden || !$('closet').hidden || !$('ach').hidden || !$('shareSheet').hidden || !$('settings').hidden;
 const hsl = ([h, s], l) => `hsl(${h} ${s}% ${l}%)`;
 
 // ---------- Kayıt ----------
@@ -1786,6 +1819,7 @@ if (save.haptics === undefined) save.haptics = true;
 if (!save.theme) save.theme = 'auto';
 // erişilebilirlik: desenli karolar, yazı boyu (0–2), yön düğmeleri (off/right/left), hareket (auto/reduce)
 save.a11y = Object.assign({ pattern: false, text: 0, dpad: 'off', motion: 'auto' }, save.a11y);
+if (!save.closet) save.closet = { ball: 'world', trail: 'soft', owned: ['world', 'soft'] }; // top ve iz koleksiyonu
 if (!save.login) save.login = { n: 0, last: null, total: 0 }; // günlük giriş ödülü: bu turda alınan gün, son alınan tarih, toplam
 if (!save.duels) save.duels = {}; // meydan okumalar: tahta özeti → { id, def, src, n, a, f, m, best, won, t }
 if (!save.tour) save.tour = {}; // haftalık turnuva: 'YYYY-Www' → { defs, best{k}, done, total, submitted, rewarded, rank }
@@ -2376,7 +2410,7 @@ function advance(S, now, sfx) {
     }
   }
   S.ballDir = [st.dx, st.dy];
-  if (!st.tp && (!st.tn || st.tn === 'gear')) S.trail.push({ x: S.ball.x, y: S.ball.y, t: now });
+  if (!st.tp && (!st.tn || st.tn === 'gear')) S.trail.push({ x: S.ball.x, y: S.ball.y, t: now, k: S.trailN = (S.trailN || 0) + 1 });
   for (; a.done < n && (p >= 1 || a.path[a.done].end <= f + 0.35); a.done++) {
     const s = a.path[a.done];
     if (paintCell(S, s.k, now) && sfx) SFX.paint(a.notes++);
@@ -2654,6 +2688,7 @@ const ACHS = [
   { id: 'tour5', icon: 'trophy', tier: 'bronze', name: 'Turnuva Gediklisi', desc: '5 haftalık turnuvayı tamamla.', val: st => st.tourDone, goal: 5 },
   { id: 'tourPod', icon: 'trophy', tier: 'silver', name: 'Kürsüde', desc: 'Bir haftalık turnuvada ilk üçe gir.', val: st => st.tourPodium, goal: 1 },
   { id: 'tourWin', icon: 'crown', tier: 'gold', name: 'Turnuva Şampiyonu', desc: 'Bir haftalık turnuvayı birinci bitir.', val: st => st.tourWins, goal: 1 },
+  { id: 'style3', icon: 'brush', tier: 'bronze', name: 'Stil Sahibi', desc: 'Koleksiyondan 3 top ya da iz al.', val: st => st.closet, goal: 3 },
   { id: 'login30', icon: 'calendar', tier: 'silver', name: 'Sadık Oyuncu', desc: '30 günlük giriş ödülü al.', val: st => st.logins, goal: 30 },
   { id: 'duel1', icon: 'swords', tier: 'bronze', name: 'Eldiven Atıldı', desc: 'Bir arkadaşına meydan oku.', val: st => st.duelsSent, goal: 1 },
   { id: 'duel5', icon: 'swords', tier: 'silver', name: 'Düello Ustası', desc: '5 meydan okumayı daha az hamleyle kazan.', val: st => st.duelsWon, goal: 5 },
@@ -2665,7 +2700,7 @@ const ACHS = [
   { id: 'gold1', icon: 'crown', tier: 'gold', name: 'Altın Dünya', desc: 'Bir dünyanın bütün bölümlerinde 3 yıldız al.', val: st => st.bestPerfect, goal: 1 },
 ];
 function achStats() {
-  const st = { done: 0, three: 0, stars: 0, noHint: 0, ...save.stats, logins: save.login.total, streak: save.stats.bestStreak, worldDone: [], bestPerfect: 0, rushBest: save.rush.best,
+  const st = { done: 0, three: 0, stars: 0, noHint: 0, ...save.stats, logins: save.login.total, closet: save.closet.owned.length - 2, streak: save.stats.bestStreak, worldDone: [], bestPerfect: 0, rushBest: save.rush.best,
     events: Object.values(save.events).filter(p => p.rewarded).length,
     masterDone: Object.keys(save.master).length, masterWorlds: WORLDS.filter((W, w) => masterCount(w) === W.to - W.from + 1).length };
   for (let i = 0; i < LEVELS.length; i++) if (save.best[i] !== undefined) {
@@ -2947,6 +2982,102 @@ $('profName').onchange = () => { save.profile.name = save.rush.name = $('profNam
 $('bProfile').onclick = () => { SFX.ui(); openProfile(); };
 $('bProfOk').onclick = () => { SFX.ui(); closeProfile(); };
 $('profile').onclick = e => { if (e.target === $('profile')) closeProfile(); };
+
+// ---------- Top ve iz koleksiyonu ----------
+// Jetonla alınan top görünümleri ve iz efektleri (yalnız görünüm; oyun kuralına dokunmaz). Jeton ödül modülünde
+// (window.spendCoins / window.coinBalance). Kayıt save.closet { ball, trail, owned[] }; 'world' ve 'soft' baştan var.
+// Almak iki dokunuş: ilki fiyatı sorar ('Onayla'), ikincisi alır ve kuşanır.
+const BALLS = [
+  { id: 'world', name: 'Dünyanın', price: 0 },
+  { id: 'sun', name: 'Güneş', price: 8, look: (h, s, d) => ({ ball: '#FFC83D', ballHi: '#FFF8D6', ballLo: '#D9730D', glow: `hsl(42 100% 60% / ${d ? 0.9 : 0.65})`, glowK: 2.2, rim: 0 }) },
+  { id: 'ember', name: 'Kor', price: 8, look: (h, s, d) => ({ ball: '#FF5A36', ballHi: '#FFD0A8', ballLo: '#8E1A0E', glow: `hsl(12 100% 55% / ${d ? 0.85 : 0.6})`, glowK: 2, rim: 0 }) },
+  { id: 'mint', name: 'Nane', price: 6, look: (h, s, d) => ({ ball: '#9FE8CF', ballHi: '#fff', ballLo: '#3E9C82', glow: 'hsl(160 70% 70% / .5)', glowK: 1.1, rim: d ? 0 : 0.18 }) },
+  { id: 'candy', name: 'Şeker', price: 8, look: (h, s, d) => ({ ball: '#FF8FB8', ballHi: '#FFE6F0', ballLo: '#C23C72', glow: 'hsl(335 90% 70% / .5)', glowK: 1.2, rim: 0, ring: 'rgba(255,255,255,.85)' }) },
+  { id: 'night', name: 'Gece', price: 10, look: (h, s, d) => ({ ball: '#2B3A78', ballHi: '#8EA2F0', ballLo: '#0D1230', glow: `hsl(232 80% 65% / ${d ? 0.8 : 0.45})`, glowK: 1.5, rim: 0, stars: true }) },
+  { id: 'planet', name: 'Gezegen', price: 12, look: (h, s, d) => ({ ball: '#E9A86B', ballHi: '#FFF1DC', ballLo: '#8A4E22', glow: 'hsl(30 80% 60% / .45)', glowK: 1.1, rim: 0, saturn: 'hsl(198 75% 72%)' }) },
+];
+const TRAILS = [
+  { id: 'soft', name: 'Işık', price: 0 },
+  { id: 'bubble', name: 'Baloncuk', price: 6 },
+  { id: 'spark', name: 'Kıvılcım', price: 8 },
+  { id: 'snow', name: 'Kar', price: 8 },
+  { id: 'rainbow', name: 'Gökkuşağı', price: 10 },
+  { id: 'heart', name: 'Kalp', price: 10 },
+];
+let closetAsk = null, closetRaf = 0;
+const coinsNow = () => window.coinBalance ? window.coinBalance() : 0;
+const previewScene = () => L || makeScene(0, 0);
+// tek bir öğenin küçük önizlemesi: top, iz ise kısa bir kuyrukla
+function paintPreview(cvs, kind, id) {
+  const dpr = Math.min(3, window.devicePixelRatio || 1) * 1.5, W = 64, H = 44;
+  cvs.width = W * dpr; cvs.height = H * dpr;
+  const c = cvs.getContext('2d'); c.scale(dpr, dpr);
+  const keep = { ...save.closet };
+  if (kind === 'ball') save.closet.ball = id; else save.closet.trail = id;
+  const S = previewScene(), C = themeColors(S), now = 100000;
+  if (kind === 'trail') {
+    const fake = { trail: [] };
+    for (let k = 1; k <= 24; k++) fake.trail.push({ x: k, y: 0, t: now - (24 - k) * 11, k: k * 3 });
+    drawTrail(c, fake, C, now, 34, p => [2 + p.x * 1.85, H / 2 + Math.sin(p.x * 0.45) * 4]);
+  }
+  c.save(); c.translate(kind === 'trail' ? 52 : W / 2, H / 2); drawBallShape(c, kind === 'trail' ? 10 : 13, C, dpr); c.restore();
+  Object.assign(save.closet, keep);
+}
+function renderCloset() {
+  const coins = coinsNow(), O = save.closet;
+  $('closetBal').textContent = `◈ ${coins}`;
+  const items = (list, kind) => list.map(it => {
+    const own = O.owned.includes(it.id), on = O[kind] === it.id, ask = closetAsk === kind + ':' + it.id;
+    const label = on ? 'Kuşanıldı' : own ? 'Kuşan' : ask ? `Onayla · ◈ ${it.price}` : coins >= it.price ? `◈ ${it.price}` : `◈ ${it.price} · ${it.price - coins} eksik`;
+    return `<button class="closet-item${on ? ' on' : ''}${ask ? ' ask' : ''}${!own && coins < it.price ? ' poor' : ''}" data-k="${kind}" data-id="${it.id}" aria-pressed="${on}" aria-label="${it.name} ${kind === 'ball' ? 'top' : 'iz'}: ${label}">`
+      + `<canvas></canvas><b>${it.name}</b><small>${label}</small></button>`;
+  }).join('');
+  $('closetBalls').innerHTML = items(BALLS, 'ball');
+  $('closetTrails').innerHTML = items(TRAILS, 'trail');
+  document.querySelectorAll('.closet-item').forEach(b => {
+    paintPreview(b.querySelector('canvas'), b.dataset.k, b.dataset.id);
+    b.onclick = () => pickCloset(b.dataset.k, b.dataset.id);
+  });
+}
+function pickCloset(kind, id) {
+  const O = save.closet, it = (kind === 'ball' ? BALLS : TRAILS).find(x => x.id === id), key = kind + ':' + id;
+  if (O.owned.includes(id)) { O[kind] = id; closetAsk = null; persist(); SFX.toggle(); $('closetHint').textContent = `${it.name} ${kind === 'ball' ? 'topu' : 'izi'} kuşanıldı.`; }
+  else if (coinsNow() < it.price) { SFX.blocked(); closetAsk = null; $('closetHint').textContent = `${it.price - coinsNow()} jeton daha gerek. Bölümleri 3 yıldızla bitir, günlük ödülü al.`; }
+  else if (closetAsk !== key) { closetAsk = key; SFX.ui(); $('closetHint').textContent = `${it.name}: almak için bir kez daha dokun.`; }
+  else if (window.spendCoins && window.spendCoins(it.price)) {
+    O.owned.push(id); O[kind] = id; closetAsk = null; persist(); SFX.ach(); buzz([15, 30, 15]);
+    $('closetHint').textContent = `${it.name} senin! Kuşanıldı.`;
+    if (checkAch().length) popAch(300);
+  }
+  renderCloset();
+}
+// üstte canlı önizleme: top bir sıra karoda gidip gelir, kuşanılmış izi bırakır
+function closetFrame(now) {
+  const cvs = $('closetCv'), r = cvs.getBoundingClientRect();
+  if ($('closet').hidden || !r.width) { closetRaf = 0; return; }
+  const dpr = Math.min(3, window.devicePixelRatio || 1);
+  if (cvs.width !== Math.round(r.width * dpr)) { cvs.width = Math.round(r.width * dpr); cvs.height = Math.round(r.height * dpr); }
+  const c = cvs.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, r.width, r.height);
+  const S = previewScene(), C = themeColors(S), n = 7, cell = Math.min(44, (r.width - 16) / n), x0 = (r.width - cell * n) / 2, y0 = (r.height - cell) / 2;
+  for (let k = 0; k < n; k++) { rrect(c, x0 + k * cell + 2, y0 + 2, cell - 4, cell - 4, cell * 0.22); c.fillStyle = C.paint; c.fill(); }
+  const ph = (now / 1600) % 2, f = ph < 1 ? ph : 2 - ph, e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2, bx = e * (n - 1);
+  const T = closetFrame.T || (closetFrame.T = { trail: [], trailN: 0 });
+  T.trail.push({ x: bx, y: 0, t: now, k: ++T.trailN });
+  drawTrail(c, T, C, now, cell, p => [x0 + (p.x + 0.5) * cell, y0 + cell / 2]);
+  c.save(); c.translate(x0 + (bx + 0.5) * cell, y0 + cell / 2); drawBallShape(c, cell * 0.31, C, dpr); c.restore();
+  closetRaf = requestAnimationFrame(closetFrame);
+}
+function openCloset() {
+  closetAsk = null; $('closetHint').textContent = '';
+  renderCloset();
+  $('closet').hidden = false;
+  if (!closetRaf) closetRaf = requestAnimationFrame(closetFrame);
+  $('bClosetOk').focus({ preventScroll: true });
+}
+function closeCloset() { $('closet').hidden = true; closetAsk = null; kick(); }
+$('bCloset').onclick = () => { SFX.ui(); openCloset(); };
+$('bClosetOk').onclick = () => { SFX.ui(); closeCloset(); };
+$('closet').onclick = e => { if (e.target === $('closet')) closeCloset(); };
 
 // ---------- Paylaşım kartı ----------
 // 1080×1350 bir görsel: logo, dünya ve bölüm, çözülmüş tahta (boyanma sırasına göre açıktan koyuya), yıldızlar, hamle.
@@ -3599,6 +3730,7 @@ const KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 
 addEventListener('keydown', e => {
   if (!$('tutorial').hidden) { if (e.key === 'Escape') closeTutorial(); return; }
   if (!$('settings').hidden) { if (e.key === 'Escape') closeSettings(); return; }
+  if (!$('closet').hidden) { if (e.key === 'Escape') closeCloset(); return; }
   if (!$('profile').hidden) { if (e.key === 'Escape') closeProfile(); return; }
   if (!$('menu').hidden) { if (e.key === 'Escape') $('menu').hidden = true; return; }
   if (overlayOpen()) return;
@@ -3643,7 +3775,7 @@ function themeColors(S) {
     paintHi: `hsl(${h} ${s}% ${dark ? 62 : 70}%)`,
     paintLo: `hsl(${h} ${s}% ${dark ? 33 : 43}%)`,
     flash: `hsl(${h} ${s}% ${dark ? 76 : 84}%)`,
-    ...ballLook(S.theme.ball, h, s, dark),
+    ...(BALLS.find(b => b.id === save.closet.ball)?.look?.(h, s, dark) || ballLook(S.theme.ball, h, s, dark)),
     round: S.theme.round,
     shadow: dark ? 'rgba(0,0,0,.5)' : 'rgba(20,24,50,.25)',
     trayShadow: dark ? 'rgba(0,0,0,.6)' : 'rgba(30,36,80,.16)',
@@ -3683,6 +3815,96 @@ function ballLook(kind, h, s, dark) {
       glow: `hsl(${h} ${s}% ${dark ? 66 : 50}% / ${dark ? 0.75 : 0.45})`, glowK: 1.3, rim: 0,
     };
   }
+}
+
+// Top gövdesi (merkez 0,0; çağıran çevirip ölçekler). blurK: ışıma için piksel çarpanı.
+function drawBallShape(c, r, C, blurK) {
+  c.fillStyle = C.shadow;
+  c.beginPath(); c.ellipse(0, r * 0.26, r, r * 0.92, 0, 0, Math.PI * 2); c.fill();
+  c.shadowColor = C.glow; c.shadowBlur = r * C.glowK * blurK;
+  const bg = c.createRadialGradient(-r * 0.35, -r * 0.4, r * 0.08, 0, 0, r);
+  bg.addColorStop(0, C.ballHi); bg.addColorStop(0.5, C.ball); bg.addColorStop(1, C.ballLo);
+  c.fillStyle = bg;
+  c.beginPath(); c.arc(0, 0, r, 0, Math.PI * 2); c.fill();
+  c.shadowBlur = 0; c.shadowColor = 'transparent';
+  if (C.rim) { c.strokeStyle = `rgba(20,30,50,${C.rim})`; c.lineWidth = Math.max(1, r * 0.07); c.stroke(); }
+  if (C.ring) { c.strokeStyle = C.ring; c.lineWidth = r * 0.16; c.beginPath(); c.arc(0, 0, r * 0.62, 0, Math.PI * 2); c.stroke(); }
+  if (C.gem) { // kristal top: sekizgen tabla ve köşelerden kenara inen kesim çizgileri
+    c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = Math.max(1, r * 0.06);
+    c.beginPath();
+    for (let a = 0; a < 8; a++) { const ang = a * Math.PI / 4 + Math.PI / 8; c.lineTo(Math.cos(ang) * r * 0.5, Math.sin(ang) * r * 0.5); }
+    c.closePath();
+    for (let a = 0; a < 8; a += 2) { const ang = a * Math.PI / 4 + Math.PI / 8; c.moveTo(Math.cos(ang) * r * 0.5, Math.sin(ang) * r * 0.5); c.lineTo(Math.cos(ang) * r * 0.95, Math.sin(ang) * r * 0.95); }
+    c.stroke();
+  }
+  if (C.facet) { // buz top: iki ince yansıma çizgisi
+    c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = Math.max(1, r * 0.08); c.lineCap = 'round';
+    c.beginPath(); c.moveTo(r * 0.1, -r * 0.55); c.lineTo(r * 0.5, -r * 0.15); c.moveTo(r * 0.25, r * 0.35); c.lineTo(r * 0.45, r * 0.15); c.stroke();
+  }
+  if (C.stars) { // gece topu: küçük yıldızlar
+    c.fillStyle = 'rgba(255,255,255,.9)';
+    for (const [x, y, s] of [[0.35, 0.1, 0.09], [-0.1, 0.45, 0.07], [0.15, -0.2, 0.05], [-0.45, 0.05, 0.05], [0.5, 0.45, 0.04]]) { c.beginPath(); c.arc(x * r, y * r, s * r, 0, Math.PI * 2); c.fill(); }
+  }
+  if (C.saturn) { // gezegen: eğik halka
+    c.save(); c.rotate(-0.4); c.strokeStyle = C.saturn; c.lineWidth = r * 0.13; c.lineCap = 'round';
+    c.beginPath(); c.ellipse(0, 0, r * 1.45, r * 0.36, 0, Math.PI * 0.06, Math.PI * 0.94); c.stroke();
+    c.restore();
+  }
+  c.fillStyle = 'rgba(255,255,255,.7)';
+  c.beginPath(); c.ellipse(-r * 0.34, -r * 0.42, r * 0.2, r * 0.12, -0.6, 0, Math.PI * 2); c.fill();
+}
+// İz efektleri: 'soft' yumuşak ışık; diğerleri her üç noktada bir şekil bırakır (p.k sıra numarası, sahte rastgelelik için)
+const TRAIL_LIFE = { soft: 200, rainbow: 320 };
+const prand = (k, n) => { const x = Math.sin(k * 12.9898 + n * 78.233) * 43758.5453; return x - Math.floor(x); };
+function drawTrail(c, S, C, now, cell, at) {
+  const kind = save.closet.trail, life = TRAIL_LIFE[kind] || 460;
+  S.trail = S.trail.filter(p => now - p.t < life);
+  if (kind === 'soft' || kind === 'rainbow') {
+    const clear = clearOf(C.paintHi);
+    for (const p of S.trail) {
+      const a = 1 - (now - p.t) / life, [tx, ty] = at(p), tr = cell * 0.34 * (0.55 + a * 0.45);
+      const col = kind === 'rainbow' ? `hsl(${(p.k * 9) % 360} 95% ${C.dark ? 62 : 58}%)` : C.paintHi;
+      const g = c.createRadialGradient(tx, ty, 0, tx, ty, tr);
+      g.addColorStop(0, col); g.addColorStop(1, kind === 'rainbow' ? `hsl(${(p.k * 9) % 360} 95% 60% / 0)` : clear);
+      c.globalAlpha = a * (kind === 'rainbow' ? 0.75 : C.dark ? 0.5 : 0.4);
+      c.fillStyle = g; c.beginPath(); c.arc(tx, ty, tr, 0, Math.PI * 2); c.fill();
+    }
+    c.globalAlpha = 1;
+    return;
+  }
+  c.save();
+  if (C.dark && kind === 'spark') c.globalCompositeOperation = 'lighter';
+  for (const p of S.trail) {
+    if (p.k % 3) continue;
+    const a = 1 - (now - p.t) / life, age = 1 - a, [x0, y0] = at(p);
+    const dx = (prand(p.k, 1) - 0.5) * cell * 0.5, dy = (prand(p.k, 2) - 0.5) * cell * 0.5;
+    c.globalAlpha = a;
+    if (kind === 'spark') {
+      const x = x0 + dx * age * 1.6, y = y0 + dy * age * 1.6, s = cell * 0.11 * (0.4 + a * 0.6);
+      c.fillStyle = `hsl(${40 + prand(p.k, 3) * 20} 100% ${62 + a * 18}%)`;
+      c.beginPath();
+      for (let j = 0; j < 8; j++) { const ang = j * Math.PI / 4 + age * 3, rr = j % 2 ? s * 0.35 : s; c.lineTo(x + Math.cos(ang) * rr, y + Math.sin(ang) * rr); }
+      c.fill();
+    } else if (kind === 'snow') {
+      const x = x0 + dx * 0.6, y = y0 + dy * 0.4 + age * cell * 0.35, s = cell * 0.09 * (0.6 + a * 0.4);
+      c.strokeStyle = C.dark ? '#fff' : 'hsl(205 60% 72%)'; c.lineWidth = Math.max(1, cell * 0.022); c.lineCap = 'round';
+      c.beginPath();
+      for (let j = 0; j < 3; j++) { const ang = j * Math.PI / 3 + age * 2; c.moveTo(x - Math.cos(ang) * s, y - Math.sin(ang) * s); c.lineTo(x + Math.cos(ang) * s, y + Math.sin(ang) * s); }
+      c.stroke();
+    } else if (kind === 'heart') {
+      const x = x0 + dx * 0.7, y = y0 + dy * 0.3 - age * cell * 0.45, s = cell * 0.075 * (0.6 + a * 0.4);
+      c.fillStyle = `hsl(${340 + prand(p.k, 3) * 15} 90% ${C.dark ? 68 : 62}%)`;
+      c.beginPath(); c.moveTo(x, y + s * 1.1);
+      c.bezierCurveTo(x - s * 1.6, y, x - s * 0.9, y - s * 1.2, x, y - s * 0.35);
+      c.bezierCurveTo(x + s * 0.9, y - s * 1.2, x + s * 1.6, y, x, y + s * 1.1); c.fill();
+    } else if (kind === 'bubble') {
+      const x = x0 + dx * 0.8, y = y0 + dy * 0.8 - age * cell * 0.2, rr = cell * (0.05 + age * 0.13);
+      c.strokeStyle = C.paintHi; c.lineWidth = Math.max(1, cell * 0.025);
+      c.beginPath(); c.arc(x, y, rr, 0, Math.PI * 2); c.stroke();
+      c.fillStyle = 'rgba(255,255,255,.6)'; c.beginPath(); c.arc(x - rr * 0.35, y - rr * 0.35, rr * 0.22, 0, Math.PI * 2); c.fill();
+    }
+  }
+  c.restore();
 }
 
 function rrect(c, x, y, w, h, r) {
@@ -3785,19 +4007,9 @@ function draw(c, G, S, now) {
   drawHint(c, G, S, C, now, lip / 2);
   drawCoach(c, G, S, C, now, lip / 2);
 
-  // topun izi: kenarı yumuşak, ışık saçan bir kuyruk
+  // topun izi (kuşanılmış iz efektine göre)
   const lift = lip / 2;
-  S.trail = S.trail.filter(p => now - p.t < 200);
-  const trailClear = clearOf(C.paintHi);
-  for (const p of S.trail) {
-    const a = 1 - (now - p.t) / 200, tx = ox + (p.x + 0.5) * cell, ty = oy + (p.y + 0.5) * cell - lift;
-    const tr = cell * 0.34 * (0.55 + a * 0.45);
-    const g = c.createRadialGradient(tx, ty, 0, tx, ty, tr);
-    g.addColorStop(0, C.paintHi); g.addColorStop(1, trailClear);
-    c.globalAlpha = a * (C.dark ? 0.5 : 0.4);
-    c.fillStyle = g; c.beginPath(); c.arc(tx, ty, tr, 0, Math.PI * 2); c.fill();
-  }
-  c.globalAlpha = 1;
+  drawTrail(c, S, C, now, cell, p => [ox + (p.x + 0.5) * cell, oy + (p.y + 0.5) * cell - lift]);
 
   // top: ışıklı küre
   const cx0 = ox + (bx + 0.5) * cell, cy0 = oy + (by + 0.5) * cell - lift;
@@ -3823,30 +4035,7 @@ function draw(c, G, S, now) {
   if (scale > 0.01) {
     c.save();
     c.translate(cx, cy); c.scale(sx * scale, sy * scale);
-    c.fillStyle = C.shadow;
-    c.beginPath(); c.ellipse(0, r * 0.26, r, r * 0.92, 0, 0, Math.PI * 2); c.fill();
-    c.shadowColor = C.glow; c.shadowBlur = r * C.glowK * dpr * scale;
-    const bg = c.createRadialGradient(-r * 0.35, -r * 0.4, r * 0.08, 0, 0, r);
-    bg.addColorStop(0, C.ballHi); bg.addColorStop(0.5, C.ball); bg.addColorStop(1, C.ballLo);
-    c.fillStyle = bg;
-    c.beginPath(); c.arc(0, 0, r, 0, Math.PI * 2); c.fill();
-    c.shadowBlur = 0; c.shadowColor = 'transparent';
-    if (C.rim) { c.strokeStyle = `rgba(20,30,50,${C.rim})`; c.lineWidth = Math.max(1, r * 0.07); c.stroke(); }
-    if (C.ring) { c.strokeStyle = C.ring; c.lineWidth = r * 0.16; c.beginPath(); c.arc(0, 0, r * 0.62, 0, Math.PI * 2); c.stroke(); }
-    if (C.gem) { // kristal top: sekizgen tabla ve köşelerden kenara inen kesim çizgileri
-      c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = Math.max(1, r * 0.06);
-      c.beginPath();
-      for (let a = 0; a < 8; a++) { const ang = a * Math.PI / 4 + Math.PI / 8; c.lineTo(Math.cos(ang) * r * 0.5, Math.sin(ang) * r * 0.5); }
-      c.closePath();
-      for (let a = 0; a < 8; a += 2) { const ang = a * Math.PI / 4 + Math.PI / 8; c.moveTo(Math.cos(ang) * r * 0.5, Math.sin(ang) * r * 0.5); c.lineTo(Math.cos(ang) * r * 0.95, Math.sin(ang) * r * 0.95); }
-      c.stroke();
-    }
-    if (C.facet) { // buz top: iki ince yansıma çizgisi
-      c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = Math.max(1, r * 0.08); c.lineCap = 'round';
-      c.beginPath(); c.moveTo(r * 0.1, -r * 0.55); c.lineTo(r * 0.5, -r * 0.15); c.moveTo(r * 0.25, r * 0.35); c.lineTo(r * 0.45, r * 0.15); c.stroke();
-    }
-    c.fillStyle = 'rgba(255,255,255,.7)';
-    c.beginPath(); c.ellipse(-r * 0.34, -r * 0.42, r * 0.2, r * 0.12, -0.6, 0, Math.PI * 2); c.fill();
+    drawBallShape(c, r, C, dpr * scale);
     c.restore();
   }
 
@@ -5977,6 +6166,14 @@ cloudBoot();
     if (coins) { r.coins += coins; got.unshift({ kind: 'coins', n: coins }); }
     persist(); sync();
     return got;
+  };
+  // Claude: top ve iz koleksiyonu (index.html) jetonu buradan harcar
+  window.coinBalance = () => economy().coins;
+  window.spendCoins = n => {
+    const r = economy();
+    if (!(n > 0) || r.coins < n) return false;
+    r.coins -= n; persist(); sync();
+    return true;
   };
   economy(); applyCollection(); sync();
 })();

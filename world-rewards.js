@@ -303,5 +303,13 @@
     persist(); sync();
     return got;
   };
+  // Claude: top ve iz koleksiyonu (index.html) jetonu buradan harcar
+  window.coinBalance = () => economy().coins;
+  window.spendCoins = n => {
+    const r = economy();
+    if (!(n > 0) || r.coins < n) return false;
+    r.coins -= n; persist(); sync();
+    return true;
+  };
   economy(); applyCollection(); sync();
 })();
