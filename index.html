@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="d2f47be4d2e5c047">
+<meta name="paintline-version" content="9709f0d90cf380c0">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -180,6 +180,20 @@
 
   .board { flex: 1; min-height: 0; position: relative; touch-action: none; }
   .board canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  /* tahtanın arkasında bölümün renginde yumuşak bir ışık */
+  .board::before { content: ''; position: absolute; inset: 4% 2%; pointer-events: none; background: radial-gradient(closest-side, color-mix(in oklab, var(--lv) 20%, transparent), transparent); }
+  /* bölüm girişi: tahtanın üstünde kısa süre beliren başlık; dokunmayı engellemez */
+  .lv-intro { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; pointer-events: none; opacity: 0; text-align: center;
+    background: radial-gradient(58% 34% at 50% 50%, color-mix(in srgb, var(--bg) 90%, transparent), color-mix(in srgb, var(--bg) 40%, transparent) 70%, transparent); }
+  .lv-intro.show { animation: lvIntro 1.7s cubic-bezier(.3, .7, .3, 1) forwards; }
+  .lv-intro small { display: flex; align-items: center; gap: 10px; font: 800 .66rem var(--f-body); letter-spacing: .24em; text-transform: uppercase; color: color-mix(in oklab, var(--lv), var(--ink) 40%); }
+  .lv-intro small::before, .lv-intro small::after { content: ''; width: 22px; height: 1px; background: currentColor; opacity: .5; }
+  .lv-intro b { font: 800 4.2rem/1.05 var(--f-display); letter-spacing: -.03em; color: var(--ink); }
+  .lv-intro b.word { font-size: 2rem; letter-spacing: -.01em; }
+  .lv-intro span { font-size: .85rem; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  @keyframes lvIntro { 0% { opacity: 0; transform: translateY(8px); } 18% { opacity: 1; transform: none; } 68% { opacity: 1; } 100% { opacity: 0; transform: scale(1.03); } }
+  :root[data-motion="reduce"] .lv-intro.show { animation: none; }
+  @media (prefers-reduced-motion: reduce) { .lv-intro.show { animation: none; } }
   .hint {
     position: absolute; left: 0; right: 0; bottom: 0; text-align: center;
     font-size: .92rem; font-weight: 500; line-height: 1.35; color: var(--muted); pointer-events: none; transition: opacity .4s;
@@ -272,6 +286,9 @@
   }
   @keyframes fade { from { opacity: 0; } }
   .sheet.center { align-items: center; }
+  /* kazanınca boyanmış tahta görünür kalsın: bulanıklık yok, yalnız alttan hafif bir perde */
+  #win { -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--bg) 55%, transparent)); }
+  .win-eyebrow { margin-bottom: -8px; }
   .card {
     width: 100%; max-width: 420px; background: var(--solid); border: 1px solid var(--line);
     border-radius: var(--r-card); padding: 30px 22px 20px; box-sizing: border-box; position: relative; overflow: hidden;
@@ -1230,6 +1247,7 @@
 
   <div class="board" id="board">
     <canvas id="cv" aria-label="Oyun tahtası. Topu kaydırmak için sürükle ya da ok tuşlarını kullan."></canvas>
+    <div class="lv-intro" id="lvIntro" aria-hidden="true"><small></small><b></b><span></span></div>
     <div class="hint" id="hint"></div>
     <div class="toast glass" id="toast" role="status" aria-live="polite"></div>
   </div>
@@ -1255,6 +1273,7 @@
 <div class="sheet" id="win" hidden>
   <div class="card" role="dialog" aria-labelledby="winTitle">
     <div class="stars" id="winStars"></div>
+    <small class="tut-eyebrow win-eyebrow" id="winEyebrow"></small>
     <h2 id="winTitle">Bölüm tamam</h2>
     <div class="stats-row" id="winStats"></div>
     <p id="winText"></p>
@@ -2467,7 +2486,24 @@ function enterScene(hint, showHint) {
   $('hint').textContent = hint;
   $('hint').style.opacity = showHint ? 1 : 0;
   updateHud(); resize(); kick();
+  showLvIntro();
   srSay(`${$('lvl').getAttribute('aria-label')}. ${L.floorCount} karo, hedef ${L.par} hamle${isFinite(L.limit) ? `, en fazla ${L.limit}` : ''}. ${save.a11y.dpad !== 'off' ? 'Yön düğmeleriyle' : 'Ok tuşlarıyla ya da kaydırarak'} oyna.`);
+}
+let lastIntro = '';
+function showLvIntro() {
+  if (L.rush || !$('title').hidden) return;
+  const key = L.duel ? 'd' + L.duel.id : L.tour !== undefined ? 't' + L.tourWeek + L.tour : L.event !== undefined ? 'e' + L.eventId + L.event : L.daily ? 'g' + L.daily : (L.master ? 'm' : 'l') + L.i;
+  if (key === lastIntro) return;
+  lastIntro = key;
+  const el = $('lvIntro'), [eb, big, sub] = el.children, w = L.world;
+  let word = true;
+  if (L.duel) { eb.textContent = 'Meydan okuma'; big.textContent = L.duel.n; sub.textContent = `${L.duel.m} hamlede çözdü · hedef ${L.par}`; }
+  else if (L.tour !== undefined) { eb.textContent = 'Haftalık turnuva'; big.textContent = `${L.tour + 1}/5`; word = false; sub.textContent = `Hedef ${L.par} hamle`; }
+  else if (L.event !== undefined) { eb.textContent = L.eventName; big.textContent = L.event + 1; word = false; sub.textContent = `Hedef ${L.par} hamle`; }
+  else if (L.daily) { eb.textContent = 'Günün bulmacası'; big.textContent = shortDate(L.daily); sub.textContent = `Hedef ${L.par} hamle`; }
+  else { eb.textContent = `${ROMAN[w] || w + 1}. Bölüm · ${WORLDS[w].name}`; big.textContent = L.i + 1; word = false; sub.textContent = L.master ? `Usta · yalnız ${L.par} hamle` : `Hedef ${L.par} hamle`; }
+  big.classList.toggle('word', word);
+  el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
 }
 const restart = () => L.rush ? (rush && !rush.over && !L.won && startRushBoard(L.rushDef)) : L.duel ? startDuel(L.duel.id) : L.tour !== undefined ? startTour(L.tour, L.tourWeek) : L.event !== undefined ? startEvent(L.event) : L.daily ? startDaily() : startLevel(L.i, true);
 // Her denemede hamle sınırı (en kısa çözüm + yarısı kadar pay, en az 3) ve en kısa çözümle orantılı
@@ -3384,6 +3420,8 @@ function updateHud() {
 }
 function showWin(s) {
   $('bDuel').hidden = !!L.duel;
+  $('winEyebrow').textContent = L.duel ? 'Meydan okuma' : L.tour !== undefined ? `Haftalık turnuva · ${L.tour + 1}/5` : L.event !== undefined ? `${L.eventName} · ${L.event + 1}`
+    : L.daily ? `Günün bulmacası · ${shortDate(L.daily)}` : `${WORLDS[worldOf(L.i)].name} · ${L.i + 1}. bölüm${L.master ? ' · Usta' : ''}`;
   starRow($('winStars'), s);
   for (let j = 0; j < s; j++) SFX.star(j);
   const last = L.i === LEVELS.length - 1, best = L.daily ? save.daily.best : save.best[L.i];
@@ -4233,6 +4271,18 @@ function draw(c, G, S, now) {
     c.restore();
   }
 
+  // kazanınca boyalı tahtanın üstünden süzülen ince bir ışık
+  if (S.won && !reduceMotion) {
+    const ts = (now - S.winT - 120) / 950;
+    if (ts > 0 && ts < 1) {
+      const x0 = ox + cell - pad, y0 = oy + cell - pad, w = (S.w - 2) * cell + pad * 2, hh = (S.h - 2) * cell + pad * 2, sx = x0 - w * 0.4 + ts * w * 1.8;
+      c.save(); rrect(c, x0, y0, w, hh, cell * 0.42); c.clip();
+      const g = c.createLinearGradient(sx - cell * 1.8, y0, sx + cell * 1.8, y0 + hh * 0.3);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, `rgba(255,255,255,${C.dark ? 0.22 : 0.42})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+      if (C.dark) c.globalCompositeOperation = 'lighter';
+      c.fillStyle = g; c.fillRect(x0, y0, w, hh); c.restore();
+    }
+  }
   // kazanınca toptan yayılan halka
   if (S.won && !reduceMotion) {
     // winT bazen performance.now() ile, çizim ise kare saatiyle gelir; aradaki küçük farkta t eksiye düşmesin
