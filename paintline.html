@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="c1c897f09b005f11">
+<meta name="paintline-version" content="5c86c908a620f3fd">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1264,7 +1264,7 @@
   .controls #bMenu span { font: 700 .56rem var(--f-body); letter-spacing: .04em; }
   #bUndo .cnt { min-width: 16px; height: 16px; padding: 0 4px; font: 800 .6rem var(--f-body); color: var(--ink); background: var(--solid); box-shadow: inset 0 0 0 1px var(--line), 0 2px 6px -3px rgba(10, 14, 40, .35); }
   #bUndo .cnt.zero { color: var(--muted); background: var(--solid); }
-  .app .reward-bar .btn { min-height: 38px; padding: 6px 12px; border-radius: 999px; font: 700 .74rem var(--f-body); letter-spacing: 0; box-shadow: none; border: 1px solid var(--line); }
+  .app .reward-bar .btn { min-height: 44px; padding: 6px 12px; border-radius: 999px; font: 700 .74rem var(--f-body); letter-spacing: 0; box-shadow: none; border: 1px solid var(--line); }
 </style>
 <style>
 .reward-bar { display:flex; gap:8px; justify-content:space-between; flex-shrink:0; }
@@ -1436,7 +1436,7 @@
 @media(prefers-reduced-motion:reduce) { [data-collection]::after, .rw-gem::after, .reward-panel, .reward-shop { animation:none!important; } }
 @media(max-width:420px) { .reward-bar .btn { font-size:.68rem; padding:7px 9px; } .rw-wallet { gap:10px; padding:12px; } .rw-coins b { font-size:1.6rem; } }
 @media(max-width:360px) { .rw-stat:last-child { display:none; } .rw-wallet { grid-template-columns:auto 1fr auto; } }
-@media(max-height:700px) { .reward-bar .btn { min-height:32px; padding-block:5px; } .app { gap:7px; } }
+@media(max-height:700px) { .reward-bar .btn { min-height:32px; padding-block:5px; } .app { gap:5px; } }
 
 /* Accessible touch targets, including compact screens. */
 .reward-bar .btn { min-height:44px; min-width:44px; }
@@ -6178,7 +6178,7 @@ async function wireFriends() {
   try { const P = await ensureProfile(); if ($('lbCode')) $('lbCode').textContent = P?.code || '——'; } catch (e) { msg('Profil hazırlanamadı. İnternetini kontrol et.', true); }
   const code = () => $('lbCode')?.textContent || '';
   $('bLbCopy').onclick = async () => { try { await navigator.clipboard.writeText(code()); msg('Kod kopyalandı.'); } catch (e) { msg('Kopyalanamadı; kodu elle yaz: ' + code()); } };
-  if ($('bLbShare')) $('bLbShare').onclick = () => navigator.share({ text: `Paintline'da beni arkadaş olarak ekle: ${code()}`, url: 'https://edonardo-creator.github.io/paintline/' }).catch(() => {});
+  if ($('bLbShare')) $('bLbShare').onclick = () => navigator.share({ text: `Paintline'da beni arkadaş olarak ekle: ${code()}`, url: 'https://paintline.lol/' }).catch(() => {});
   const paint = () => { const ul = $('lbFriends'); if (!ul) return; ul.innerHTML = lbFriendsHtml(); ul.querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
     try { await api(`/rest/v1/friends?user_id=eq.${auth.user.id}&friend_id=eq.${b.dataset.del}`, { method: 'DELETE' }); lbFriends = lbFriends.filter(f => f.id !== b.dataset.del); paint(); msg('Listeden çıkarıldı.'); if (lbScope === 'friends') renderLb(); }
     catch (e) { msg('Çıkarılamadı.', true); } }); };
@@ -6308,7 +6308,7 @@ function tourCard() {
 // adı, avatarı ve çerçevesi (base64url JSON). Sunucu yok; açan oyuncu aynı tahtayı oynar, daha az hamleyle geçmeye çalışır,
 // isterse kendi sonucuyla cevap bağlantısı gönderir. Hedef (par) açılışta çözücüyle yeniden hesaplanır; bozuk bağlantı reddedilir.
 // Kayıt save.duels[id] (id = tahtanın özeti), en yeni DUEL_MAX tutulur. İpucu ve güç kapalı, jeton ve bölüm rekoru yok.
-const DUEL_MAX = 20, SITE_URL = 'https://edonardo-creator.github.io/paintline/';
+const DUEL_MAX = 20, SITE_URL = 'https://paintline.lol/';
 const TILE_CHARS = new Set(LEVELS.flatMap(l => [...l.grid.join('')]));
 const b64enc = s => btoa(String.fromCharCode(...new TextEncoder().encode(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0)));

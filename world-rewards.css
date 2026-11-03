@@ -167,7 +167,7 @@
 @media(prefers-reduced-motion:reduce) { [data-collection]::after, .rw-gem::after, .reward-panel, .reward-shop { animation:none!important; } }
 @media(max-width:420px) { .reward-bar .btn { font-size:.68rem; padding:7px 9px; } .rw-wallet { gap:10px; padding:12px; } .rw-coins b { font-size:1.6rem; } }
 @media(max-width:360px) { .rw-stat:last-child { display:none; } .rw-wallet { grid-template-columns:auto 1fr auto; } }
-@media(max-height:700px) { .reward-bar .btn { min-height:32px; padding-block:5px; } .app { gap:7px; } }
+@media(max-height:700px) { .reward-bar .btn { min-height:32px; padding-block:5px; } .app { gap:5px; } }
 
 /* Accessible touch targets, including compact screens. */
 .reward-bar .btn { min-height:44px; min-width:44px; }
