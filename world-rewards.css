@@ -171,3 +171,26 @@
 
 /* Accessible touch targets, including compact screens. */
 .reward-bar .btn { min-height:44px; min-width:44px; }
+
+/* Claude 2026-11-03 (kullanıcı isteği: mağaza da menülerle aynı sade, yetişkin dile geçsin).
+   Tabana dokunmadan üstüne yazar; Codex: istersen bu kuralları tabana taşı ya da kaldır. */
+.rw-head h2 { text-transform:none; letter-spacing:-.01em; font-size:1.45rem; }
+.rw-wallet { background:var(--solid); border:1px solid var(--line); box-shadow:inset 0 1px 0 var(--hi), 0 14px 30px -26px rgba(10,14,40,.5); }
+.rw-gem { width:44px; height:44px; font-size:1.05rem; color:hsl(40 85% 40%); overflow:visible;
+  background:radial-gradient(circle at 50% 30%, color-mix(in oklab, hsl(42 95% 55%) 26%, var(--solid)), color-mix(in oklab, hsl(42 95% 55%) 9%, var(--solid)));
+  box-shadow:inset 0 0 0 1.5px color-mix(in oklab, hsl(42 92% 50%) 75%, transparent), 0 6px 14px -8px hsl(40 95% 45%); }
+.rw-gem::after { display:none; }
+.rw-earn { gap:0; margin:16px 0 4px; padding:10px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.rw-earn li { background:transparent; border:0; border-radius:0; padding:4px 6px; }
+.rw-earn li + li { border-left:1px solid var(--line); }
+.rw-sec { font:800 .64rem var(--f-body); letter-spacing:.2em; color:var(--muted); margin:22px 0 10px; }
+.rw-sec small { font-weight:600; letter-spacing:.04em; text-transform:none; }
+.rw-card { background:var(--solid); border:1px solid var(--line); box-shadow:0 12px 26px -22px rgba(10,14,40,.45); }
+.rw-skin.equipped { box-shadow:0 0 0 2px var(--collection-color); }
+.rw-ico { width:38px; height:38px; border-radius:50%; color:color-mix(in oklab, var(--collection-color), var(--ink) 20%);
+  background:radial-gradient(circle at 50% 30%, color-mix(in oklab, var(--collection-color) 22%, var(--solid)), color-mix(in oklab, var(--collection-color) 9%, var(--solid)));
+  box-shadow:inset 0 0 0 1.5px color-mix(in oklab, var(--collection-color) 70%, transparent); }
+.rw-ico svg { width:19px; height:19px; }
+.rw-buy { font:700 .82rem var(--f-body); letter-spacing:0; text-transform:none; text-shadow:none; box-shadow:none; background:color-mix(in oklab, var(--collection-color), #000 22%); }
+.rw-buy.on { background:color-mix(in oklab, var(--collection-color), #000 8%); }
+.rw-rules summary { font:800 .64rem var(--f-body); letter-spacing:.2em; }
