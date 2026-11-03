@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="d2075a8ffdadb19a">
+<meta name="paintline-version" content="3e67e43eb9fef21e">
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1250,6 +1250,18 @@
   .settings .set-foot { text-align: center; color: var(--muted); font-size: .8rem; margin: 0; }
   .set-foot b { font-family: var(--f-display); color: var(--ink); }
   .set-row > svg { color: var(--muted); }
+
+  /* Oyun ekranı cilası: üst şerit kutusuz ince araç çubuğu (hamle kartıyla iki kart üst üste binmesin),
+     kontroller tek aile, geri alma sayısı nötr rozet, mağaza küçük jeton etiketi */
+  #app > header { background: transparent; border-color: transparent; padding: 0 2px; }
+  #app > header .brand-name { font-size: .9rem; }
+  #app > header #lvl { background: var(--solid); border-color: var(--line); }
+  #app > header .gear { background: var(--solid); border-color: var(--line); }
+  .controls #bMenu { color: var(--ink); background: color-mix(in oklab, var(--lv) 16%, var(--solid)); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--lv) 40%, transparent); }
+  .controls #bMenu span { font: 700 .56rem var(--f-body); letter-spacing: .04em; }
+  #bUndo .cnt { min-width: 16px; height: 16px; padding: 0 4px; font: 800 .6rem var(--f-body); color: var(--ink); background: var(--solid); box-shadow: inset 0 0 0 1px var(--line), 0 2px 6px -3px rgba(10, 14, 40, .35); }
+  #bUndo .cnt.zero { color: var(--muted); background: var(--solid); }
+  .app .reward-bar .btn { min-height: 38px; padding: 6px 12px; border-radius: 999px; font: 700 .74rem var(--f-body); letter-spacing: 0; box-shadow: none; border: 1px solid var(--line); }
 </style>
 <style>
 .reward-bar { display:flex; gap:8px; justify-content:space-between; flex-shrink:0; }
