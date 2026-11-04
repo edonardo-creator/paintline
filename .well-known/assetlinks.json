@@ -1,10 +1,13 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "lol.paintline.app",
       "sha256_cert_fingerprints": [
+        "54:D9:BD:10:E9:EF:B3:7E:57:12:99:4D:95:8E:4F:DD:15:54:D3:84:BD:F0:A2:82:6A:7A:AC:8F:B3:A5:13:C2",
         "87:E0:A5:6F:B3:B2:B3:D4:27:EE:BF:C4:F5:2C:5A:E1:44:5F:51:E0:58:63:94:53:29:E0:57:A0:CA:34:31:3A"
       ]
     }
