@@ -1,8 +1,21 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="b79ca47ae63671fe">
+<meta name="paintline-version" content="3666a57a17192cee">
 <meta name="google-adsense-account" content="ca-pub-6247665234607957">
-<script async data-ad-client="ca-pub-6247665234607957" data-ad-frequency-hint="30s" data-adbreak-test="on" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" crossorigin="anonymous"></script>
-<script>window.adsbygoogle = window.adsbygoogle || []; var adBreak = adConfig = function (o) { adsbygoogle.push(o); };</script>
+<script>
+// Ödüllü reklam anahtarı. Kapalıyken Google betiği hiç yüklenmez, adBreak çağrıları sırada bekler ve reklam düğmesi görünmez.
+// Açmadan önce: Play kapalı test incelemesi bitmiş ve Play reklam/veri güvenliği beyanları gönderilmiş olmalı (YAPILACAKLAR 10).
+// ADS_TEST: Google'ın deneme reklamları; H5 oyun reklamı onaylanınca false.
+const ADS_ON = false, ADS_TEST = true;
+window.adsbygoogle = window.adsbygoogle || []; var adBreak = adConfig = function (o) { adsbygoogle.push(o); };
+if (ADS_ON && /^https?:$/.test(location.protocol)) {
+  const s = document.createElement('script');
+  s.async = true; s.crossOrigin = 'anonymous';
+  s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+  s.dataset.adClient = 'ca-pub-6247665234607957'; s.dataset.adFrequencyHint = '30s';
+  if (ADS_TEST) s.dataset.adbreakTest = 'on';
+  document.head.appendChild(s);
+}
+</script>
 <meta name="theme-color" content="#0A0C15">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
