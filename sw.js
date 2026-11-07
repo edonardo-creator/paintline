@@ -1,5 +1,5 @@
 const PREFIX = 'paintline-' + encodeURIComponent(new URL(self.registration.scope).pathname) + '-';
-const CACHE = PREFIX + '146ac71907305dc9';
+const CACHE = PREFIX + 'eeab13d650c19921';
 const FILES = [
   './index.html', './paintline.html', './world-rewards.js', './world-rewards.css',
   './pwa.js', './pwa.css', './manifest.webmanifest',
