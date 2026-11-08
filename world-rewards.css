@@ -194,3 +194,19 @@
 .rw-buy { font:700 .82rem var(--f-body); letter-spacing:0; text-transform:none; text-shadow:none; box-shadow:none; background:color-mix(in oklab, var(--collection-color), #000 22%); }
 .rw-buy.on { background:color-mix(in oklab, var(--collection-color), #000 8%); }
 .rw-rules summary { font:800 .64rem var(--f-body); letter-spacing:.2em; }
+/* Claude 2026-11-08 (kullanıcı isteği): açıklama kutusu, 2×2 kazanma rehberi, kartlarda "ne işe yarar" */
+.rw-guide { margin:14px 0 0; padding:14px; border-radius:18px; background:var(--solid); border:1px solid var(--line); }
+.rw-guide h3 { margin:0 0 10px; font:800 .95rem var(--f-display); letter-spacing:-.005em; }
+.rw-why { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.rw-why > div { padding:10px; border-radius:14px; background:color-mix(in oklab, var(--ink) 4%, transparent); }
+.rw-why b { display:block; font:800 .8rem var(--f-body); margin-bottom:4px; }
+.rw-why p, .rw-note { margin:0; font-size:.74rem; line-height:1.45; color:var(--muted); font-weight:600; }
+.rw-note { margin-top:10px; }
+@media (max-width: 360px) { .rw-why { grid-template-columns:1fr; } }
+.rw-earn { grid-template-columns:repeat(2, 1fr); row-gap:6px; }
+.rw-earn li + li { border-left:0; }
+.rw-earn li:nth-child(even) { border-left:1px solid var(--line); }
+.rw-earn li:nth-child(n+3) { border-top:1px solid var(--line); padding-top:8px; }
+.rw-earn li { overflow-wrap:anywhere; }
+.rw-card .rw-what, .rw-card .rw-when { font-size:.7rem; line-height:1.4; color:var(--muted); margin:6px 0 0; }
+.rw-card .rw-when b { color:var(--ink); font-weight:700; }

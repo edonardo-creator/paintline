@@ -2,17 +2,17 @@
 (() => {
   'use strict';
   const ITEMS = [
-    { color: '#ff759a', hue: [340, 85], skin: 'Gül Kuvars', effect: 'Pembe boya halkaları', power: 'Boya Patlaması', description: 'Topun çevresindeki dört açık karoyu boyar.', price: 6, fx: 'petals' },
-    { color: '#29d9ba', hue: [166, 80], skin: 'Zümrüt Akıntı', effect: 'Yeşil akıntı dalgaları', power: 'Zaman Dalgası', description: 'Bu denemedeki hamle sayısını 3 azaltır. En az 3 hamle gerekir.', price: 7, fx: 'waves' },
-    { color: '#bd8cff', hue: [272, 85], skin: 'Kozmik Ametist', effect: 'Mor yıldız tozu', power: 'Yıldız Geçidi', description: 'İlk boyanmamış açık karoya ışınlanır ve onu boyar.', price: 8, fx: 'stars' },
-    { color: '#71e8ff', hue: [190, 90], skin: 'Kutup Kristali', effect: 'Mavi kristal parıltısı', power: 'Buz Zırhı', description: 'Bu deneme boyunca kırılmış buzların üzerinden geçmeni sağlar.', price: 9, fx: 'crystals' },
-    { color: '#ffbf47', hue: [38, 95], skin: 'Altın Voltaj', effect: 'Altın elektrik çizgileri', power: 'Uzaktan Şalter', description: 'Bütün bariyerlerin açık/kapalı durumunu anında tersine çevirir.', price: 10, fx: 'sparks' },
+    { color: '#ff759a', hue: [340, 85], skin: 'Gül Kuvars', effect: 'Pembe boya halkaları', power: 'Boya Patlaması', description: 'Topun çevresindeki dört açık karoyu boyar.', when: 'Son birkaç karo kaldı ama onlara ulaşmak çok hamle istiyorsa.', price: 6, fx: 'petals' },
+    { color: '#29d9ba', hue: [166, 80], skin: 'Zümrüt Akıntı', effect: 'Yeşil akıntı dalgaları', power: 'Zaman Dalgası', description: 'Bu denemedeki hamle sayısını 3 azaltır. En az 3 hamle gerekir.', when: 'Hamle sınırına takılıyorsan: bölümü bitirmek için 3 hamle kazandırır.', price: 7, fx: 'waves' },
+    { color: '#bd8cff', hue: [272, 85], skin: 'Kozmik Ametist', effect: 'Mor yıldız tozu', power: 'Yıldız Geçidi', description: 'İlk boyanmamış açık karoya ışınlanır ve onu boyar.', when: 'Köşede kalmış, ulaşması zor bir karo varsa.', price: 8, fx: 'stars' },
+    { color: '#71e8ff', hue: [190, 90], skin: 'Kutup Kristali', effect: 'Mavi kristal parıltısı', power: 'Buz Zırhı', description: 'Bu deneme boyunca kırılmış buzların üzerinden geçmeni sağlar.', when: 'Çatlak buzu erken kırıp kendi yolunu kapattığında.', price: 9, fx: 'crystals' },
+    { color: '#ffbf47', hue: [38, 95], skin: 'Altın Voltaj', effect: 'Altın elektrik çizgileri', power: 'Uzaktan Şalter', description: 'Bütün bariyerlerin açık/kapalı durumunu anında tersine çevirir.', when: 'Bir bariyer yanlış durumda kaldıysa ve şaltere geri dönmek uzun sürecekse.', price: 10, fx: 'sparks' },
     // Claude: 6. dünya (Kristal Mağara) eklendi; Codex gözden geçirsin
-    { color: '#d68cff', hue: [292, 85], skin: 'Prizma Işığı', effect: 'Gökkuşağı prizma kırılmaları', power: 'Ayna Çevirme', description: 'Bu denemede bütün kristal aynaları ters yöne çevirir.', price: 11, fx: 'prism' },
+    { color: '#d68cff', hue: [292, 85], skin: 'Prizma Işığı', effect: 'Gökkuşağı prizma kırılmaları', power: 'Ayna Çevirme', description: 'Bu denemede bütün kristal aynaları ters yöne çevirir.', when: 'Aynalar topu sürekli istemediğin yöne gönderiyorsa.', price: 11, fx: 'prism' },
     // Claude: 7. dünya (Saat Kulesi); kendi efekti 'gears' (pirinç dişliler).
-    { color: '#e0a94a', hue: [38, 80], skin: 'Pirinç Mekanizma', effect: 'Altın dişli parıltısı', power: 'Zamanı Geri Sar', description: 'Bütün saat kadranlarının ibresini bir çeyrek geri çevirir.', price: 12, fx: 'gears' },
+    { color: '#e0a94a', hue: [38, 80], skin: 'Pirinç Mekanizma', effect: 'Altın dişli parıltısı', power: 'Zamanı Geri Sar', description: 'Bütün saat kadranlarının ibresini bir çeyrek geri çevirir.', when: 'Bir kadranı fazla çevirip ibreyi yanlış yöne kilitlediğinde.', price: 12, fx: 'gears' },
     // Claude: 8. dünya (Rüzgâr Vadisi); efekt 'breeze' (esinti çizgileri)
-    { color: '#7fd0f5', hue: [198, 82], skin: 'Gökyüzü Esintisi', effect: 'Uçuşan esinti çizgileri', power: 'Rüzgârı Çevir', description: 'Bu denemede bütün rüzgâr kapılarının yönünü tersine çevirir.', price: 13, fx: 'breeze' },
+    { color: '#7fd0f5', hue: [198, 82], skin: 'Gökyüzü Esintisi', effect: 'Uçuşan esinti çizgileri', power: 'Rüzgârı Çevir', description: 'Bu denemede bütün rüzgâr kapılarının yönünü tersine çevirir.', when: 'Bir rüzgâr kapısı yolunu ters yönden kapatıyorsa.', price: 13, fx: 'breeze' },
   ];
   const SKIN_PRICE = 12;
   // Claude: hazine listesinde karşılığı olmayan bir dünya eklenirse oyun çökmesin; güç düğmesi o dünyada kapalı kalır
@@ -26,20 +26,30 @@
     <header class="rw-head"><div><small>Ustalık koleksiyonu</small><h2 id="rewardTitle">Dünya hazineleri</h2></div>
       <button class="btn icon rw-close" id="rewardClose" aria-label="Kapat"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
     <div class="rw-wallet" id="rewardBalance"></div>
+    <!-- Claude 2026-11-08 (kullanıcı isteği): neyi niçin almalı, set ve güç ne işe yarar -->
+    <section class="rw-guide" aria-labelledby="rwGuideTitle">
+      <h3 id="rwGuideTitle">Jetonunu neye harcamalısın?</h3>
+      <div class="rw-why">
+        <div><b>Güç</b><p>Takıldığın bölümü geçmene yardım eder. Tek kullanımlıktır ve yalnız kendi dünyasında çalışır. Zorlandığın dünyanın gücünü al.</p></div>
+        <div><b>Renk seti</b><p>Kalıcıdır, yalnız görünümü değiştirir: o dünyada top, boya ve efektler bu renkte olur. Oyunu kolaylaştırmaz; o dünyadaki ustalığını gösterir.</p></div>
+      </div>
+      <p class="rw-note">Gücü oyunda tahtanın altındaki güç düğmesiyle kullanırsın; o deneme en fazla 2 yıldız alır ve jeton vermez. Top, iz ve avatarlar Profil → Top ve iz koleksiyonu'nda.</p>
+    </section>
     <ol class="rw-earn" aria-label="Jeton nasıl kazanılır">
       <li><span class="rw-earn-ico rw-stars">★★★</span><b>+1</b><small>Bölümü ilk kez kusursuz bitir</small></li>
       <li><span class="rw-earn-ico">100%</span><b>+5</b><small>Bir dünyanın bütün yıldızları</small></li>
+      <li><span class="rw-earn-ico">Her gün</span><b>+1–3</b><small>Görevler, giriş ödülü ve sandıklar</small></li>
       <li class="rw-zero"><span class="rw-earn-ico">İpucu · güç</span><b>0</b><small>Yardımlı çözüm jeton vermez</small></li>
     </ol>
     <div id="rewardItems">
-      <h3 class="rw-sec">Renk setleri <small>Kalıcı · top, boya ve efekt</small></h3>
+      <h3 class="rw-sec">Renk setleri <small>Kalıcı · yalnız görünüm</small></h3>
       <div class="rw-row" id="rewardSkins"></div>
-      <h3 class="rw-sec">Güçler <small>Tek kullanımlık · kendi dünyasında</small></h3>
+      <h3 class="rw-sec">Güçler <small>Tek kullanımlık · takıldığında yardım</small></h3>
       <div class="rw-grid" id="rewardPowers"></div>
     </div>
     <p id="rewardMessage" role="status" aria-live="polite"></p>
     <details class="rw-rules"><summary>Kurallar</summary><ul>
-      <li>Jeton yalnızca bir bölümü <b>ilk kez</b>, ipucu ya da güç kullanmadan 3 yıldızla bitirince gelir; tekrar oynamak jeton vermez.</li>
+      <li>Bölüm jetonu yalnızca bir bölümü <b>ilk kez</b>, ipucu ya da güç kullanmadan 3 yıldızla bitirince gelir; tekrar oynamak jeton vermez. Günlük görevler, giriş ödülü, sandıklar ve haftalık turnuva da jeton verir.</li>
       <li>Renk setleri kalıcıdır; istediğin zaman kuşanıp çıkarabilirsin.</li>
       <li>Güçler tek kullanımlıktır, yalnızca kendi dünyasında ve her denemede bir kez kullanılır. Günün bulmacasında kapalıdır.</li>
       <li>Güç kullanılan deneme en fazla 2 yıldız alır. Geri alma gücün etkisini geri çevirir ama harcanan hakkı iade etmez.</li>
@@ -159,7 +169,7 @@
       const card = document.createElement('article');
       card.className = 'rw-card rw-skin' + (r.equipped[w] ? ' equipped' : '');
       card.style.setProperty('--collection-color', item.color);
-      card.innerHTML = `${preview(item)}<small class="rw-world">${W.name}</small><h4>${item.skin}</h4><p>${item.effect}</p>
+      card.innerHTML = `${preview(item)}<small class="rw-world">${W.name}</small><h4>${item.skin}</h4><p>${item.effect}</p><p class="rw-what">${W.name} bölümlerinde top ve boya bu renkte olur.</p>
         <span class="rw-progress">${perfectHere}/${W.to - W.from + 1} kusursuz${r.worlds[w] ? ' · bonus ✓' : ''}</span>`;
       const short = SKIN_PRICE - r.coins;
       const skinBtn = !r.skins[w]
@@ -183,7 +193,7 @@
       pc.style.setProperty('--collection-color', item.color);
       const stock = r.stock[w] || 0, need = item.price - r.coins;
       pc.innerHTML = `<div class="rw-ico" aria-hidden="true"><svg viewBox="0 0 24 24">${POWER_ICONS[w] || POWER_ICONS[0]}</svg></div>
-        <div class="rw-ptext"><small class="rw-world">${W.name}</small><h4>${item.power}</h4><p>${item.description}</p></div>
+        <div class="rw-ptext"><small class="rw-world">${W.name}</small><h4>${item.power}</h4><p>${item.description}</p>${item.when ? `<p class="rw-when"><b>Ne zaman işe yarar?</b> ${item.when}</p>` : ''}</div>
         <span class="rw-stock${stock ? ' has' : ''}">Çantada ${stock}</span>`;
       pc.appendChild(buyButton(`1 kullanım al · ${item.price} ◈`, need > 0 ? `◈ ${item.price}<small>${need} jeton daha</small>` : `◈ ${item.price} · Al`, need > 0, () => {
         if (r.coins < item.price) return;
