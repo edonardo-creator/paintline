@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="63f7fd01092f810d">
+<meta name="paintline-version" content="2b0761f6f753c6ea">
 
 
 
@@ -2778,10 +2778,10 @@ function retryState() {
   r.t = (r.t || []).filter(x => now - x < RETRY_MS).slice(-RETRY_DAY);
   return { left: Math.max(0, RETRY_DAY - r.t.length) + (r.bonus || 0), next: r.t.length >= RETRY_DAY ? r.t[0] + RETRY_MS : 0 };
 }
-const retryCounts = i => i !== null && i !== undefined && !(masterOn && worldDone(worldOf(i)));
+const retryCounts = i => i !== null && i !== undefined && worldOf(i) > 0 && !(masterOn && worldDone(worldOf(i))); // ilk dünya sınırın dışında: yeni oyuncu rahatça denesin
 const retryDirty = new Set(); // bu oturumda hamle yapılıp bitirilmemiş normal bölüm: haritadan yeniden girmek hak harcar
 const retryOwed = i => (save.retry?.lost === i || retryDirty.has(i)) ? i : null;
-const sceneCounts = () => L && !L.rush && !L.duel && !L.daily && L.tour === undefined && L.event === undefined && !L.master && L.i !== null;
+const sceneCounts = () => L && !L.rush && !L.duel && !L.daily && L.tour === undefined && L.event === undefined && !L.master && L.i !== null && worldOf(L.i) > 0;
 function useRetry() {
   const r = save.retry; retryState();
   if (r.t.length < RETRY_DAY) r.t.push(Date.now()); else r.bonus = Math.max(0, (r.bonus || 0) - 1);
