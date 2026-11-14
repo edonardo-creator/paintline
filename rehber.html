@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paintline nasıl oynanır – kurallar, yıldızlar ve özel karolar</title>
+<meta name="description" content="Sakin kaydırma bulmacası Paintline nasıl oynanır: top nasıl hareket eder, yıldızlar ve hedef hamle nasıl işler, her özel karo ne yapar.">
+<link rel="canonical" href="https://paintline.lol/rehber.html">
+<link rel="alternate" hreflang="en" href="https://paintline.lol/guide.html">
+<link rel="alternate" hreflang="tr" href="https://paintline.lol/rehber.html">
+<link rel="alternate" hreflang="x-default" href="https://paintline.lol/guide.html">
+<meta property="og:title" content="Paintline nasıl oynanır – kurallar, yıldızlar ve özel karolar">
+<meta property="og:description" content="Sakin kaydırma bulmacası Paintline nasıl oynanır: top nasıl hareket eder, yıldızlar ve hedef hamle nasıl işler, her özel karo ne yapar.">
+<meta property="og:image" content="https://paintline.lol/icons/icon-512.png">
+<meta name="google-adsense-account" content="ca-pub-6247665234607957">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"Paintline","url":"https://paintline.lol/","genre":"Puzzle","gamePlatform":["Web browser","iOS"],"applicationCategory":"Game","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<style>
+  :root { --bg: #F5F6FA; --card: #FFFFFF; --ink: #161A2B; --muted: #5B6178; --line: #E2E5EE; --accent: #E4572E; --soft: #FFF1EC; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0A0C15; --card: #151A2D; --ink: #ECEEF7; --muted: #9AA0BA; --line: #262C45; --accent: #FF8A5B; --soft: #2A1C1A; color-scheme: dark; } }
+  html { background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding-block: max(20px, env(safe-area-inset-top, 0px)) max(32px, env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  header, main, footer { max-width: 720px; margin: 0 auto; box-sizing: border-box; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.15rem; color: var(--ink); text-decoration: none; margin-right: auto; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  header nav { display: flex; flex-wrap: wrap; gap: 6px; }
+  header nav a { padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); text-decoration: none; font-size: .88rem; }
+  header nav a[aria-current] { color: var(--ink); border-color: var(--accent); }
+  main { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px; }
+  h1 { margin: 0 0 6px; font-size: 1.8rem; line-height: 1.2; text-wrap: balance; }
+  .lead { margin: 0 0 8px; color: var(--muted); font-size: 1.05rem; }
+  h2 { margin: 30px 0 8px; font-size: 1.25rem; line-height: 1.3; }
+  h3 { margin: 20px 0 4px; font-size: 1.05rem; }
+  p { margin: 8px 0; }
+  ul, ol { padding-inline-start: 22px; margin: 8px 0; }
+  li { margin: 5px 0; }
+  a { color: var(--accent); }
+  .tile { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; margin: 14px 0; }
+  .tile b.ic { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--soft); font-size: 1.35rem; }
+  .tile h3 { margin: 0 0 2px; }
+  .tile p { margin: 0; }
+  .cta { display: inline-block; margin: 18px 0 4px; padding: 12px 22px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 700; text-decoration: none; }
+  .note { margin-top: 18px; padding: 12px 14px; border-radius: 12px; background: var(--soft); }
+  footer { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: center; font-size: .88rem; color: var(--muted); }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<header><a class="brand" href="/"><img src="icons/icon-192.png" alt="" width="32" height="32">Paintline</a><nav><a href="rehber.html" aria-current="page">Nasıl oynanır</a><a href="ipuclari.html">İpuçları ve strateji</a><a href="hakkinda.html">Hakkında ve SSS</a><a href="guide.html" hreflang="en" lang="en">English</a></nav></header>
+<main>
+<article>
+<h1>Paintline nasıl oynanır</h1>
+<p class="lead">Topu kaydır, her karoyu boya, en kısa yolu bul. İlk kaydırmadan en zorlu karolara kadar bilmen gereken her şey burada.</p>
+<h2>Temel kural</h2>
+<p>Her bölüm, duvarlarla çevrili küçük bir karo tahtasıdır. Boya topun karolardan birinin üstünde durur. Yukarı, aşağı, sola ya da sağa kaydır (klavyede ok tuşları da olur); top o yöne yuvarlanmaya başlar. <strong>Bir karo sonra durmaz</strong>: önüne bir engel, çoğunlukla bir duvar ya da tahtanın kenarı çıkana kadar kaymaya devam eder.</p>
+<p>Topun üstünden geçtiği her karo o dünyanın rengine boyanır. Son boyanmamış karo da boyandığı anda bölüm biter. Bütün fikir bu kadar; ama şaşırtıcı derecede derindir. Top her zaman gidebildiği yere kadar gittiği için istediğin karoya yürüyemezsin. Tam ihtiyacın olan yerde biten yollar planlaman gerekir.</p>
+
+<h2>Hamleler, hedef ve yıldızlar</h2>
+<p>Her kaydırma bir hamledir. Her bölümün bir <strong>hedefi</strong> vardır: bütün yolları deneyen bir çözücünün bulduğu en kısa çözümün uzunluğu. Hedef kadar hamlede bitirirsen üç yıldız alırsın. Birkaç fazla hamleyle de bölüm biter ama daha az yıldızla.</p>
+<p>Bölümlerin bir de hamle sınırı vardır. Tahta boyanmadan hamlelerin biterse yeniden dene. Oyun bazen kalan hamlelerle tahtanın bitemeyeceğini erkenden fark eder ve söyler; böylece boşuna uğraşmazsın.</p>
+<ul>
+  <li><strong>Geri al</strong> son hamleni geri çevirir. Her denemede sınırlı hakkın vardır; kaç tane kaldığı düğmede yazar. Bölümü baştan başlatmak hakları yeniler.</li>
+  <li><strong>İpucu</strong> (ampul) sıradaki en iyi hamleyi gösterir. Takıldığında işe yarar, ama ipucu kullanılan deneme en fazla iki yıldız alır.</li>
+  <li><strong>Baştan başla</strong> tahtayı istediğin an ilk hâline döndürür.</li>
+</ul>
+
+<h2>Özel karolar</h2>
+<p>Yeni fikirler dünya dünya gelir. Her biri ilk karşılaştığında kısa, elle denenen bir rehberle tanıtılır ve sevimli bir karakter nasıl çalıştığını anlatır. Hızlı bir özet:</p>
+<div class="tile"><b class="ic" aria-hidden="true">●</b><div><h3>Durdurucular</h3><p>Durdurucu, zeminde yumuşak bir noktadır. Top üstüne gelince duvara kadar kaymak yerine tam orada durur. Durdurucular, açık bir koridorun ortasında hamle bitirmeni sağlar.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">➜</b><div><h3>Oklar</h3><p>Ok karosu topu çevirir. Top hangi yönden gelirse gelsin, oktan okun gösterdiği yöne çıkar ve kaymaya devam eder.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">◎</b><div><h3>Işınlanma kapıları</h3><p>Kapılar eş çiftler hâlinde gelir: daire daireye, elmas elmasa. Birine giren top eşinden çıkar ve aynı yönde yuvarlanmayı sürdürür.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">❄</b><div><h3>Çatlak buz</h3><p>Çatlak buzun üstünden yalnızca bir kez geçilir. Top ayrıldığı an buz kırılır ve orası bir daha giremeyeceğin bir deliğe döner. Buzdaki yarıklar ise topu duvarın altından öbür yana geçirir.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">⇄</b><div><h3>Şalterler ve bariyerler</h3><p>Şaltere değince tahtadaki bütün bariyerler tersine döner: kapalılar açılır, açıklar kapanır. Yükseltilmiş, çizgili blok kapalı bariyerdir.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">⚡</b><div><h3>Yıldırım ve çark</h3><p>Yıldırım karosu topu önündeki duvarların üstünden atlatır. Çark ise topu duvarın içinden arkasındaki karoya taşır.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">◇</b><div><h3>Kristal aynalar</h3><p>Ayna topu doksan derece yansıtır; geldiği yöne göre sola ya da sağa döner.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">♨</b><div><h3>Gayzerler</h3><p>Gayzer topu havaya fırlatır. Top aradaki duvarların üstünden üç karo ileri uçar, iner ve kaymayı sürdürür.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">◷</b><div><h3>Saat kadranları</h3><p>Kadran topu ibresinin gösterdiği yöne çevirir. Top her geçtiğinde ibre saat yönünde bir çeyrek döner; aynı kadran bir dahaki gelişte topu başka yöne yollar.</p></div></div>
+<div class="tile"><b class="ic" aria-hidden="true">≋</b><div><h3>Rüzgâr kapıları</h3><p>Rüzgâr kapısından yalnızca rüzgârla aynı yönde ilerlerken geçebilirsin. Başka yönden gelirsen kapı duvar gibi davranır ve topu önünde durdurur.</p></div></div>
+
+<h2>Oyun modları</h2>
+<ul>
+  <li><strong>Hikâye:</strong> en küçük boya damlası Damla ile dünyadan dünyaya git, diyara renkleri geri getir.</li>
+  <li><strong>Günün bulmacası:</strong> herkes için her gün yeni bir bulmaca; üst üste çözdükçe serin uzar.</li>
+  <li><strong>Zamana karşı:</strong> süre bitmeden olabildiğince çok tahta çöz; hızlı ve temiz çözümler çarpan kazandırır.</li>
+  <li><strong>Haftalık turnuva:</strong> herkes aynı beş bölümü oynar; en az toplam hamle kazanır.</li>
+  <li><strong>Arkadaşına meydan oku:</strong> bir bölümü bağlantıyla gönder, hamle sayılarını karşılaştırın.</li>
+  <li><strong>Usta zorluk:</strong> bir dünyayı bitirince açılır. Hamle sınırı en kısa çözümdür; geri alma ve ipucu yoktur.</li>
+</ul>
+
+<h2>Kontroller ve erişilebilirlik</h2>
+<p>Paintline tek başparmakla oynanacak şekilde tasarlandı. Tahtanın herhangi bir yerinde kaydır ya da ayarlardan ekrandaki yön düğmelerini aç. Bilgisayarda ok tuşları ve WASD da çalışır. Desenli karolar bazı renkleri ayırt etmekte zorlanan oyunculara yardım eder; büyük yazı, azaltılmış hareket, açık ya da koyu tema ve tam ekran okuyucu desteği de seçilebilir.</p>
+<p>Hazır mısın? İlk bölümler her şeyi adım adım öğretir. Sonraki sayfada <a href="ipuclari.html">en kısa yolu bulmak için ipuçları</a> var.</p>
+<a class="cta" href="/">Paintline'ı tarayıcıda ücretsiz oyna</a>
+</article>
+</main>
+<footer><a href="/">Oyna</a><a href="destek.html?lang=tr">Destek</a><a href="gizlilik.html?lang=tr">Gizlilik</a><a href="indir.html">Uygulamayı indir</a></footer>
+</body>
+</html>

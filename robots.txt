@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /reconnect.html
+Disallow: /indir.html
+
+Sitemap: https://paintline.lol/sitemap.xml
