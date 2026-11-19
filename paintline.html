@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<meta name="paintline-version" content="befc9ce7ac574240">
+<meta name="paintline-version" content="8f221fc8e88c6bd5">
 
 
 
@@ -4304,6 +4304,23 @@ function showWin(s) {
   chestDot();
   $('win').hidden = false;
   $('bNext').focus({ preventScroll: true });
+  if (!L.daily && s === 3) askReview();
+}
+// iPhone'da App Store puan penceresi: yalnız hikâye bölümünü 3 yıldızla bitirince, en az 12 galibiyetten sonra,
+// 120 günde bir ve en fazla 3 kez (Apple da yılda en çok 3 kez gösterir, ne zaman göstereceğine kendisi karar verir).
+// Kayıt oyun kaydının dışında (paintline.review), bulutla eşitlenmez: puan isteği cihaza özgü.
+function askReview() {
+  if (!APP_IOS || (save.stats?.wins || 0) < 12) return;
+  let r = {}; try { r = JSON.parse(localStorage.getItem('paintline.review') || '{}'); } catch (e) {}
+  const now = Date.now();
+  if ((r.n || 0) >= 3 || now - (r.t || 0) < 120 * 864e5) return;
+  const sc = L;
+  setTimeout(() => {
+    if (L !== sc || $('win').hidden) return; // bu arada başka ekrana geçildiyse sorma
+    const p = capPlugin('InAppReview'); if (!p?.requestReview) return;
+    try { localStorage.setItem('paintline.review', JSON.stringify({ n: (r.n || 0) + 1, t: now })); } catch (e) {}
+    p.requestReview().catch(() => {});
+  }, 1600);
 }
 function showWorldCard(w) {
   const W = WORLDS[w];
